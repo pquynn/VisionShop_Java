@@ -1,0 +1,91 @@
+package components.ProductPanels;
+
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+
+import view.user.ProductDetail;
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+
+import javax.swing.JLabel;
+import java.awt.Font;
+import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class ProductThumbnail extends JPanel {
+
+	
+	public ProductThumbnail() {
+		
+		setBackground(new Color(255, 255, 240));
+		setLayout(new BorderLayout(0, 0));
+		
+		JPanel imagePanel = new JPanel();
+		add(imagePanel, BorderLayout.CENTER);
+		
+		JPanel product_info = new JPanel();
+		product_info.setBackground(new Color(255, 255, 255));
+		add(product_info, BorderLayout.SOUTH);
+		product_info.setLayout(null);
+		product_info.setPreferredSize(new Dimension(100, 50));
+
+		JLabel name = new JLabel("Tên mắt kính");
+		name.setBounds(15, 7, 85, 19);
+		name.setForeground(new Color(0, 0, 0));
+		name.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		product_info.add(name);
+		
+		JLabel price = new JLabel("Giá");
+		price.setBounds(15, 25, 36, 16);
+		price.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		price.setEnabled(true);
+		product_info.add(price);
+		imagePanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel image = new JLabel("");
+		imagePanel.add(image, BorderLayout.CENTER);
+		
+		JPanel west = new JPanel();
+		west.setBackground(new Color(255, 255, 255));
+		add(west, BorderLayout.WEST);
+		west.setPreferredSize(new Dimension(5, 100));
+		
+		JPanel east = new JPanel();
+		east.setBackground(new Color(255, 255, 255));
+		add(east, BorderLayout.EAST);
+		east.setPreferredSize(new Dimension(5, 100));
+		
+		JPanel north = new JPanel();
+		north.setBackground(new Color(255, 255, 255));
+		add(north, BorderLayout.NORTH);
+		north.setPreferredSize(new Dimension(100, 5));
+		
+		addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				new ProductDetail().setVisible(true);;
+			}
+			
+			
+			public void mouseEntered(MouseEvent e) {
+				setBorder(new LineBorder(new Color(192,192,192)));
+			}
+			
+			public void mouseExited(MouseEvent e) {
+				setBorder(null);
+			}
+		});
+		
+		addMouseListener(new MouseAdapter() {
+			public void mouseEntered(MouseEvent e) {
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+			}
+			
+			public void mouseExited(MouseEvent e) {
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+	}
+}
