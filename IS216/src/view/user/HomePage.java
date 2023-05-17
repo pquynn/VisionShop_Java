@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.SwingConstants;
 
+import view.Login;
 import view.admin.Statistics;
 
 import javax.swing.JButton;
@@ -24,7 +25,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class HomePage extends JFrame {
-
+	private Login login;
 	private JPanel contentPane;
 	private JPanel navbar;
 	private JPanel navbar_footer;
@@ -42,13 +43,14 @@ public class HomePage extends JFrame {
 	private MyOrder myorderPanel;
 	private Admin adminPanel;
 	private Account accountPanel;
+	private int user_id;
 
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					HomePage frame = new HomePage();
+					HomePage frame = new HomePage(1);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,7 +60,7 @@ public class HomePage extends JFrame {
 	}
 
 	
-	public HomePage() {
+	public HomePage(int user_id) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(300, 100, 1040, 640);
 		setResizable(false);
@@ -66,17 +68,18 @@ public class HomePage extends JFrame {
 		contentPane.setBackground(new Color(255, 255, 255));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
+		this.user_id = user_id;
 		
 		//----------homePanel
 		homePanel = new Home();
 		contentPane.add(homePanel, BorderLayout.CENTER);
 		
-		//----------cart, myorder, admin, account Panel
-		cartPanel = new Cart();
-		myorderPanel = new MyOrder();
-		accountPanel = new Account();
-		adminPanel = new Admin();
-		
+		//-----------
+		cartPanel = new Cart(this.user_id);
+		myorderPanel = new MyOrder(this.user_id);
+		accountPanel = new Account(this.user_id);
+		adminPanel = new Admin(this.user_id);
+
 		
 		//-----------navbar
 		navbar = new JPanel();
@@ -375,7 +378,10 @@ public class HomePage extends JFrame {
 				}
 			}
 		});
-			
-		
+	}
+	
+	
+	public void setLogin(Login lg) {
+		login = lg;
 	}
 }

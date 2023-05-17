@@ -38,6 +38,7 @@ import java.awt.event.FocusEvent;
 
 public class Login extends JFrame {
 
+	private HomePage homePage;
 	private JPanel contentPane;
 	private CustomJTextField email;
 	private JPasswordField password;
@@ -226,7 +227,7 @@ public class Login extends JFrame {
 		
 		try {
 			Connection conn = OracleConn.getConnection();
-			String sql = "select * from \"User\" where email = ? and \"password\" = ?";
+			String sql = "select user_id from \"User\" where email = ? and \"password\" = ?";
 			PreparedStatement pst = conn.prepareStatement(sql);
 			
 			pst.setString(1, email);
@@ -234,7 +235,9 @@ public class Login extends JFrame {
 			
 			ResultSet rs = pst.executeQuery();
 			if(rs.next()) {
-				new HomePage().setVisible(true);
+				int user_id = rs.getInt("user_id");
+				homePage = new HomePage(user_id);
+				homePage.setVisible(true);
 				dispose();
 			}
 			else {

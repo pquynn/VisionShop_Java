@@ -51,18 +51,6 @@ public class ProductInCart extends JPanel {
 		imagePanel.setLayout(new BorderLayout(0, 0));
 		imagePanel.setPreferredSize(new Dimension(150, 100));
 		
-		JPanel checkbox_panel = new JPanel();
-		checkbox_panel.setBackground(new Color(255, 255, 255));
-		imagePanel.add(checkbox_panel, BorderLayout.WEST);
-		checkbox_panel.setPreferredSize(new Dimension(30, 100));
-		checkbox_panel.setLayout(null);
-		
-		JCheckBox checkBox = new JCheckBox("");
-		checkBox.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		checkBox.setBackground(new Color(255, 255, 255));
-		checkBox.setBounds(4, 33, 27, 27);
-		checkbox_panel.add(checkBox);
-		
 		JPanel infoPanel = new JPanel();
 		infoPanel.setBackground(new Color(255, 255, 255));
 		add(infoPanel, BorderLayout.CENTER);

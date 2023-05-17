@@ -47,13 +47,13 @@ public class ChangePassword extends JFrame {
 	private JLabel confirm_ps_error;
 
 	private Account account;
-	private int id;
+	private int user_id;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ChangePassword frame = new ChangePassword();
+					ChangePassword frame = new ChangePassword(1);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -62,13 +62,15 @@ public class ChangePassword extends JFrame {
 		});
 	}
 
-	public ChangePassword() {
+	public ChangePassword(int user_id) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		setBounds(350, 150, 880, 550);
+		setBounds(440, 180, 880, 550);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(255, 255, 255));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		this.user_id = user_id;
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -250,7 +252,7 @@ public class ChangePassword extends JFrame {
 			String sql = "update \"User\" set \"password\" = ? where user_id =?"; 
 			PreparedStatement pst = con.prepareStatement(sql);
 			pst.setString(1, newpw);
-			pst.setInt(2, id);
+			pst.setInt(2, user_id);
 			
 			int rowcount = pst.executeUpdate();
 			if(rowcount > 0) {
@@ -286,6 +288,21 @@ public class ChangePassword extends JFrame {
 			isValid = false;
 		}
 		
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = "select * from \"User\" where \"password\" = ? and user_id =?"; 
+			PreparedStatement pst = con.prepareStatement(sql);
+			pst.setString(1, oldpw);
+			pst.setInt(2, user_id);
+			
+			ResultSet rs = pst.executeQuery();
+			if(!rs.next()) {
+				old_pw_error.setText("Mật khẩu hiện tại không trùng khớp");
+				isValid = false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return isValid;
 	}
 	
@@ -296,10 +313,7 @@ public class ChangePassword extends JFrame {
 		new_pw_error.setText("");
 		confirm_ps_error.setText("");
 	}
-	//set user id
-	public void setId(int id) {
-		this.id = id;
-	}
+	
 	//set account panel that opens this frame
 	public void setAccountPanel(Account account) {
 		this.account = account;

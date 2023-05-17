@@ -52,11 +52,23 @@ public class EditProduct extends JFrame {
 	private JComboBox category;
 	private JLabel image;
 	
+	private JLabel name_error;
+	private JLabel price_error;
+	private JLabel quantity_error;
+	private JLabel shape_error;
+	private JLabel material_error;
+	private JLabel color_error;
+	private JLabel description_error;
+	private JLabel image_error;
+	
 	private Products products;
 	private int id;
 	private JFileChooser file;
 	private File selectedFile;
 	private boolean isChanged = false;
+	private String tname, tprice, tquantity, tdescription, tshape, tcolor, tmaterial, tcategory;
+	
+	
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -158,7 +170,10 @@ public class EditProduct extends JFrame {
 		JButton editButton = new JButton("Lưu thay đổi");
 		editButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				updateProductDetailById();
+				clearMessage();
+				
+				if(validateProduct() && !checkDuplicateProductName())
+					updateProductDetailById();
 			}
 		});
 		editButton.setForeground(Color.WHITE);
@@ -249,6 +264,54 @@ public class EditProduct extends JFrame {
 		image.setBackground(new Color(192, 192, 192));
 		image.setBounds(110, 185, 252, 225);
 		contentPane.add(image);
+		
+		name_error = new JLabel();
+		name_error.setForeground(Color.RED);
+		name_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		name_error.setBounds(110, 121, 225, 21);
+		contentPane.add(name_error);
+		
+		price_error = new JLabel();
+		price_error.setForeground(Color.RED);
+		price_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		price_error.setBounds(110, 168, 225, 21);
+		contentPane.add(price_error);
+		
+		quantity_error = new JLabel();
+		quantity_error.setForeground(Color.RED);
+		quantity_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		quantity_error.setBounds(532, 121, 225, 21);
+		contentPane.add(quantity_error);
+		
+		description_error = new JLabel();
+		description_error.setForeground(Color.RED);
+		description_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		description_error.setBounds(532, 214, 225, 21);
+		contentPane.add(description_error);
+		
+		material_error = new JLabel();
+		material_error.setForeground(Color.RED);
+		material_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		material_error.setBounds(532, 265, 225, 21);
+		contentPane.add(material_error);
+		
+		color_error = new JLabel();
+		color_error.setForeground(Color.RED);
+		color_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		color_error.setBounds(532, 314, 225, 21);
+		contentPane.add(color_error);
+		
+		shape_error = new JLabel();
+		shape_error.setForeground(Color.RED);
+		shape_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		shape_error.setBounds(532, 359, 225, 21);
+		contentPane.add(shape_error);
+		
+		image_error = new JLabel();
+		image_error.setForeground(Color.RED);
+		image_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		image_error.setBounds(110, 411, 225, 21);
+		contentPane.add(image_error);
 	}
 	
 	
@@ -272,7 +335,7 @@ public class EditProduct extends JFrame {
 					description.setText(castCLOBtoString(clob));
 					category.setSelectedItem(rs.getString("category_name"));
 					//image
-					byte[] imagedata = rs.getBytes("file_image");
+					byte[] imagedata = rs.getBytes("image");
 					ImageIcon MyImage = new ImageIcon(imagedata);
 			        Image img = MyImage.getImage();
 			        Image newImg = img.getScaledInstance(image.getWidth(), image.getHeight(), Image.SCALE_SMOOTH);
@@ -341,11 +404,16 @@ public class EditProduct extends JFrame {
 				try {
 					Connection con = OracleConn.getConnection();
 					String sql = 
-						"update Glasses set file_name=? where glasses_id=?";
+						"update Glasses set image=? where glasses_id=?";
 					PreparedStatement prs = con.prepareStatement(sql);
 					InputStream in = new FileInputStream(selectedFile);
 					prs.setBlob(1, in);
 					prs.setInt(2, id);
+					
+					int rowcount = prs.executeUpdate();
+					if(rowcount < 0) {
+						JOptionPane.showMessageDialog(null, "Cập nhật hình ảnh không thành công");
+					}
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -353,6 +421,86 @@ public class EditProduct extends JFrame {
 			}
 			
 		}
+		
+		//validation
+		public boolean validateProduct() {
+			tname = this.name.getText();
+			 tprice = this.price.getText();
+			 tquantity = this.quantity.getText();
+			 tcolor = this.color.getText();
+			 tshape = this.shape.getText();
+			 tmaterial = this.material.getText();
+			 tdescription = this.description.getText();
+			
+			boolean check = true;
+			
+			if (tname.equals("")) {
+				name_error.setText("Yêu cầu nhập Họ tên.");
+				check = false;
+			}else if (checkDuplicateProductName())
+				name_error.setText("Tên sản phẩm đã tồn tại.");
+			
+			if (tprice.equals("")) {
+				price_error.setText("Yêu cầu nhập Giá.");
+				check = false;
+			}
+			else if (!tprice.matches("[0-9]+")){ 
+					check = false;
+				}
+			
+			if (tquantity.equals("")) {
+				quantity_error.setText("Yêu cầu nhập Số lượng.");
+				check = false;
+			}
+			else if(!tquantity.matches("[0-9]+")) {
+			check = false;
+			}
+			
+			if (tcolor.equals("")) {
+				color_error.setText("Yêu cầu nhập Màu sắc.");
+				check = false;
+			}
+			
+			if (tshape.equals("")) {
+				shape_error.setText("Yêu cầu nhập Kiểu dáng.");
+				check = false;
+			}
+			
+			if (tmaterial.equals("")) {
+				material_error.setText("Yêu cầu nhập Chất liệu.");
+				check = false;
+			}
+			
+			if (tdescription.equals("")) {
+				description_error.setText("Yêu cầu nhập Mô tả.");
+				check = false;
+			}
+			return check;
+		}
+		
+		// check duplicate product name 
+		public boolean checkDuplicateProductName() {
+			String name = this.name.getText();
+			boolean isExist = false;
+			try {
+				Connection con = OracleConn.getConnection();
+				String sql = "select * from Glasses where glasses_name = ? and glasses_id <> ?";
+				PreparedStatement pst = con.prepareStatement(sql);
+				pst.setString(1, name);
+				pst.setInt(2, id);
+				ResultSet rs = pst.executeQuery();
+				
+				if(rs.next()) {
+					isExist = true;
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return isExist;
+		}
+		
 		
 		
 		// to reset jtable after updating
@@ -367,6 +515,18 @@ public class EditProduct extends JFrame {
 		
 		public void setId(int id) {
 			this.id = id;
+		}
+		
+		// clear validation messages 
+		public void clearMessage() {
+			name_error.setText("");
+			price_error.setText("");
+			quantity_error.setText("");
+			description_error.setText("");
+			material_error.setText("");
+			color_error.setText("");
+			shape_error.setText("");
+			image_error.setText("");
 		}
 		
 		//set category name to combobox category

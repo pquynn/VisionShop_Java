@@ -28,6 +28,8 @@ import javax.swing.JFrame;
 
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,6 +38,8 @@ import java.awt.event.ActionEvent;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Account extends JPanel {
 	private CustomJTextField name;
@@ -50,17 +54,22 @@ public class Account extends JPanel {
 	private JLabel email_display;
 	private JLabel avatar;
 	
-	private int id;
+	private JLabel name_error;
+	private JLabel email_error;
+	private JLabel phone_error;
+	
+	private int user_id;
 	private JFileChooser file;
 	private File selectedFile;
-	private boolean isChanged;
+	private boolean isChanged = false;
 	
 	private ChangePassword changePassword;
 	
-	public Account() {
+	public Account(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
 		setLayout(new BorderLayout(0, 0));
+		this.user_id = user_id;
 		
 		JPanel content_heading = new JPanel();
 		content_heading.setBackground(new Color(255, 255, 255));
@@ -80,19 +89,9 @@ public class Account extends JPanel {
 		avatar_setting.setPreferredSize(new Dimension(400,100));
 		
 		avatar = new JLabel("");
-		avatar.setIcon(new ImageIcon(Account.class.getResource("/assets/avatar_large_icon.png")));
-		avatar.setHorizontalAlignment(SwingConstants.CENTER);
-		avatar.setBounds(172, 86, 150, 150);
-		avatar_setting.add(avatar);
-		
-		JButton changeAvaButton_1 = new JButton("Thay đổi avatar");
-		changeAvaButton_1.setForeground(Color.BLACK);
-		changeAvaButton_1.setFont(new Font("SansSerif", Font.BOLD, 16));
-		changeAvaButton_1.setBackground(Color.WHITE);
-		changeAvaButton_1.setBounds(172, 44, 152, 32);
-		avatar_setting.add(changeAvaButton_1);
-		changeAvaButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		avatar.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				
 				file = new JFileChooser();
 		          file.setCurrentDirectory(new File(System.getProperty("user.home")));
 		          //filter the files
@@ -109,10 +108,22 @@ public class Account extends JPanel {
 		  	          ImageIcon newImgIcon = new ImageIcon(newImg); 
 		              avatar.setIcon(newImgIcon);
 		              isChanged = true;
-		              updateUserImage();
+		      
 		          }
 			}
 		});
+		avatar.setIcon(new ImageIcon(Account.class.getResource("/assets/avatar_large_icon.png")));
+		avatar.setHorizontalAlignment(SwingConstants.CENTER);
+		avatar.setBounds(172, 86, 150, 150);
+		avatar_setting.add(avatar);
+		
+		/*JButton changeAvaButton_1 = new JButton("Thay đổi avatar");
+		changeAvaButton_1.setForeground(Color.BLACK);
+		changeAvaButton_1.setFont(new Font("SansSerif", Font.BOLD, 16));
+		changeAvaButton_1.setBackground(Color.WHITE);
+		changeAvaButton_1.setBounds(172, 44, 152, 32);
+		avatar_setting.add(changeAvaButton_1);
+		*/
 		
 		name_display = new JLabel("name");
 		name_display.setHorizontalAlignment(SwingConstants.CENTER);
@@ -180,6 +191,22 @@ public class Account extends JPanel {
 		phone.setBounds(106, 185, 252, 32);
 		phone.setTypingStyle();
 		info_setting.add(phone);
+		phone.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				if(phone.getText().equals("Điện thoại")) {
+					phone.setText("");
+					phone.requestFocus();
+					phone.setTypingStyle();
+				}
+			}
+			
+			public void focusLost(FocusEvent e) {
+				if(phone.getText().length() == 0) {
+					phone.setDefaultStyle();
+					phone.setText("Điện thoại");
+				}
+			}
+		});
 		
 		JLabel genderLabel = new JLabel("Giới tính:");
 		genderLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -196,7 +223,10 @@ public class Account extends JPanel {
 		info_setting.add(saveButton);
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				updateUserDetailById();
+				clearMessage();
+				
+				if(validateUser() && !checkDuplicateUser())
+					updateUserDetailById();
 			}
 		});
 		
@@ -242,6 +272,24 @@ public class Account extends JPanel {
 		gender.add(male);
 		gender.add(other);
 		
+		 name_error = new JLabel();
+		name_error.setForeground(Color.RED);
+		name_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		name_error.setBounds(106, 65, 109, 21);
+		info_setting.add(name_error);
+		
+		 email_error = new JLabel();
+		email_error.setForeground(Color.RED);
+		email_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		email_error.setBounds(106, 115, 109, 21);
+		info_setting.add(email_error);
+		
+		 phone_error = new JLabel();
+		phone_error.setForeground(Color.RED);
+		phone_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		phone_error.setBounds(106, 214, 177, 21);
+		info_setting.add(phone_error);
+		
 		setUserDetail();
 	}
 	
@@ -250,7 +298,7 @@ public class Account extends JPanel {
 			Connection conn = OracleConn.getConnection();
 			String sql = "select * from \"User\" where user_id = ?";
 			PreparedStatement pst = conn.prepareStatement(sql);
-			pst.setInt(1, id);
+			pst.setInt(1, user_id);
 			ResultSet rs = pst.executeQuery();
 			
 			while(rs.next()) {
@@ -271,12 +319,14 @@ public class Account extends JPanel {
 						other.setSelected(true);
 				
 				//image
-				byte[] imagedata = rs.getBytes("file_image"); //cho no thanh hinh tron lun
+				byte[] imagedata = rs.getBytes("image"); //cho no thanh hinh tron lun
+				if(imagedata != null) {
 				ImageIcon MyImage = new ImageIcon(imagedata);
 		        Image img = MyImage.getImage();
 		        Image newImg = img.getScaledInstance(avatar.getWidth(), avatar.getHeight(), Image.SCALE_SMOOTH);
 		        ImageIcon newImgIcon = new ImageIcon(newImg); 
 				avatar.setIcon(newImgIcon);
+				}
 				
 			}
 		} catch (Exception e) {
@@ -306,7 +356,7 @@ public class Account extends JPanel {
 				prs.setString(3, email);
 				prs.setString(4, phone);
 				prs.setString(5, gender);
-				prs.setInt(6, id);
+				prs.setInt(6, user_id);
 				
 				int RowCount = prs.executeUpdate();
 				if(RowCount > 0) {
@@ -319,19 +369,20 @@ public class Account extends JPanel {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		
-		
-		void updateUserImage() {
+			
 			if(isChanged) {
 				try {
 					Connection con = OracleConn.getConnection();
 					String sql = 
-						"update \"User\" set file_image=? where user_id=?";
+						"update \"User\" set image=? where user_id=?";
 					PreparedStatement prs = con.prepareStatement(sql);
 					InputStream in = new FileInputStream(selectedFile);
 					prs.setBlob(1, in);
-					prs.setInt(2, id);
+					prs.setInt(2, user_id);
+					int rowcount = prs.executeUpdate();
+					if(rowcount < 0) {
+						JOptionPane.showMessageDialog(null, "Cập nhật hình ảnh không thành công");
+					}
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -339,14 +390,72 @@ public class Account extends JPanel {
 			}
 		}
 		
-		public void setId(int it) {
-			this.id = id;
-		}
-		
 		public void createNewChangePassword() {
-			changePassword = new ChangePassword();
-			changePassword.setId(id);
+			changePassword = new ChangePassword(user_id);
 			changePassword.setAccountPanel(this);
 			changePassword.setVisible(true);
 		}
+		
+		//validation
+				public boolean validateUser() {
+					String full_name = name.getText();
+					String email = this.email.getText();
+					String phone = this.phone.getText();
+					
+					boolean check = true;
+					//full name
+					if (full_name.equals("")) {
+						name_error.setText("Yêu cầu nhập Họ tên.");
+						check = false;
+					}
+					//email
+					if (email.equals("")) {
+						email_error.setText("Yêu cầu nhập Email.");
+						check = false;
+					}
+					else if (!email.matches("^.+@.+\\..+$")) {
+							email_error.setText("Email không hợp lệ.");
+							check = false;
+						}
+					else if (checkDuplicateUser()) {
+						email_error.setText("Email này đã tồn tại");
+					}
+					
+					//phone
+					if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+					check = false;
+					}
+					return check;
+				}
+				
+				// check duplicate user 
+				public boolean checkDuplicateUser() {
+					String email = this.email.getText();
+					boolean isExist = false;
+					try {
+						Connection con = OracleConn.getConnection();
+						String sql = "select * from \"User\" where email = ? and user_id <> ?";
+						PreparedStatement pst = con.prepareStatement(sql);
+						pst.setString(1, email);
+						pst.setInt(2, user_id);
+						ResultSet rs = pst.executeQuery();
+						
+						if(rs.next()) {
+							isExist = true;
+						}
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+					return isExist;
+				}
+				
+				// clear validation messages 
+				public void clearMessage() {
+					name_error.setText("");
+					email_error.setText("");
+					phone_error.setText("");
+				}
+				
 }

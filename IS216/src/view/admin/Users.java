@@ -52,6 +52,8 @@ public class Users extends JPanel {
 	private TableEvent event;
 	private AddUser adduser;
 	private EditUser edituser;
+	private int user_id;
+	
 
 	public Users() {
 		setBackground(new Color(255, 255, 255));
@@ -308,6 +310,8 @@ public class Users extends JPanel {
 		
 	}
 	
-	
+	public void setId(int id) {
+		user_id = id;
+	}
 	
 }

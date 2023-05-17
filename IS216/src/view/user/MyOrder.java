@@ -25,12 +25,13 @@ import javax.swing.JComboBox;
 public class MyOrder extends JPanel{
 	private JTable orders_list;
 	private CustomJTextField search_order;
-
+	private int user_id;
 	
-	public MyOrder() {
+	public MyOrder(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
 		setLayout(new BorderLayout(0, 0));
+		this.user_id = user_id;
 		
 		JPanel content1 = new JPanel();
 		content1.setBackground(new Color(255, 255, 255));
@@ -122,5 +123,9 @@ public class MyOrder extends JPanel{
 		String[] header = {	"ID", "Mã khách hàng", "Ngày mua", "Điện thoại", "Tổng tiền", "Trạng thái", "Thao t\u00E1c"};
 	
 	
+	}
+	
+	public void setId(int id) {
+		user_id = id;
 	}
 }

@@ -465,7 +465,7 @@ public class AddProduct extends JFrame {
 		try {
 			Connection con = OracleConn.getConnection();
 			String sql = 
-				"insert into Glasses(glasses_name, price, quantity, color, shape, material, \"description\", category_id, file_image) values (?,?,?,?,?,?,?,?,?)";
+				"insert into Glasses(glasses_name, price, quantity, color, shape, material, \"description\", category_id, image) values (?,?,?,?,?,?,?,?,?)";
 			
 			PreparedStatement prs = con.prepareStatement(sql);
 			InputStream in = new FileInputStream(selectedFile);

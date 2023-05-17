@@ -24,6 +24,8 @@ import javax.swing.JComboBox;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.security.Identity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,6 +45,11 @@ public class EditUser extends JFrame {
 	private JRadioButton female;
 	private JRadioButton other;
 	private ButtonGroup gender;
+	
+	private JLabel name_error;
+	private JLabel email_error;
+	private JLabel password_error;
+	private JLabel phone_error;
 	
 	private Users users;
 	private int id;
@@ -136,6 +143,22 @@ public class EditUser extends JFrame {
 		phone.setBounds(529, 167, 228, 32);
 		phone.setTypingStyle();
 		contentPane.add(phone);
+		phone.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				if(phone.getText().equals("Điện thoại")) {
+					phone.setText("");
+					phone.requestFocus();
+					phone.setTypingStyle();
+				}
+			}
+			
+			public void focusLost(FocusEvent e) {
+				if(phone.getText().length() == 0) {
+					phone.setDefaultStyle();
+					phone.setText("Điện thoại");
+				}
+			}
+		});
 		
 		JLabel genderLabel = new JLabel("Giới tính:");
 		genderLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -176,7 +199,10 @@ public class EditUser extends JFrame {
 		JButton editButton = new JButton("Lưu thay đổi");
 		editButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				updateUserDetailById();
+				clearMessage();
+				
+				if(validateUser() && !checkDuplicateUser())
+					updateUserDetailById();
 			}
 		});
 		editButton.setForeground(Color.WHITE);
@@ -215,6 +241,30 @@ public class EditUser extends JFrame {
 		role.setBounds(161, 272, 228, 29);
 		role.setBorder(null);
 		contentPane.add(role);
+		
+		name_error = new JLabel();
+		name_error.setForeground(Color.RED);
+		name_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		name_error.setBounds(166, 151, 109, 21);
+		contentPane.add(name_error);
+		
+		email_error = new JLabel();
+		email_error.setForeground(Color.RED);
+		email_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		email_error.setBounds(161, 200, 109, 21);
+		contentPane.add(email_error);
+		
+		password_error = new JLabel();
+		password_error.setForeground(Color.RED);
+		password_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		password_error.setBounds(161, 251, 155, 21);
+		contentPane.add(password_error);
+		
+		phone_error = new JLabel();
+		phone_error.setForeground(Color.RED);
+		phone_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		phone_error.setBounds(530, 200, 177, 21);
+		contentPane.add(phone_error);
 	}
 	
 	//set user detail by id to frame
@@ -293,6 +343,76 @@ public class EditUser extends JFrame {
 		}
 	}
 	
+	//validation
+		public boolean validateUser() {
+			String full_name = name.getText();
+			String password = this.password.getText();
+			String email = this.email.getText();
+			String phone = this.phone.getText();
+			
+			boolean check = true;
+			//full name
+			if (full_name.equals("")) {
+				name_error.setText("Yêu cầu nhập Họ tên.");
+				check = false;
+			}
+			//email
+			if (email.equals("")) {
+				email_error.setText("Yêu cầu nhập Email.");
+				check = false;
+			}
+			else if (!email.matches("^.+@.+\\..+$")) {
+					email_error.setText("Email không hợp lệ.");
+					check = false;
+				}
+			
+			//password
+			if (password.equals("")) {
+				password_error.setText("Yêu cầu nhập Mật khẩu.");
+				check = false;
+			}
+			else if (checkDuplicateUser()) {
+				email_error.setText("Email này đã tồn tại");
+			}
+			
+			//phone
+			if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+			check = false;
+			}
+			return check;
+		}
+		
+		// check duplicate user 
+		public boolean checkDuplicateUser() {
+			String email = this.email.getText();
+			boolean isExist = false;
+			try {
+				Connection con = OracleConn.getConnection();
+				String sql = "select * from \"User\" where email = ? and user_id <> ?";
+				PreparedStatement pst = con.prepareStatement(sql);
+				pst.setString(1, email);
+				pst.setInt(2, id);
+				ResultSet rs = pst.executeQuery();
+				
+				if(rs.next()) {
+					isExist = true;
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return isExist;
+		}
+		
+		// clear validation messages 
+		public void clearMessage() {
+			name_error.setText("");
+			email_error.setText("");
+			password_error.setText("");
+			phone_error.setText("");
+		}
+		
 	
 	// to reset jtable after updating
 	public void resetTable() {

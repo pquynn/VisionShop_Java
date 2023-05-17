@@ -28,7 +28,7 @@ import java.awt.event.MouseEvent;
 public class Home extends JPanel {
 
 	private CustomJTextField search_bar;
-
+	
 	public Home() {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
@@ -113,12 +113,43 @@ public class Home extends JPanel {
 		content_center.setBorder(null);
 		content_center.setBackground(new Color(255, 255, 255));
 		scrollPane.setViewportView(content_center);
-		content_center.setLayout(new GridLayout(0, 1, 20, 12));
+		content_center.setLayout(new GridLayout(0, 4, 20, 12));
 		
 		
 		//---------------------------------------------------
 		
-		JPanel product_row_1 = new JPanel();
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		content_center.add(createEmptyJPanel());
+		
+		/*content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		content_center.add(new ProductThumbnail());
+		*/
+		/*JPanel product_row_1 = new JPanel();
 		product_row_1.setBackground(new Color(255, 255, 255));
 		content_center.add(product_row_1);
 		product_row_1.setLayout(new GridLayout(1, 4, 20, 20));
@@ -149,7 +180,13 @@ public class Home extends JPanel {
 		product_row_3.add(new ProductThumbnail());
 		product_row_3.add(new ProductThumbnail());
 		product_row_3.add(new ProductThumbnail());
+		*/
 		
-		
+	}
+	
+	public JPanel createEmptyJPanel() {
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.white);
+		return panel;
 	}
 }

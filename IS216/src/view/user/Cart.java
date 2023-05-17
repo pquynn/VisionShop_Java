@@ -21,11 +21,14 @@ public class Cart extends JPanel {
 	private CustomJTextField email;
 	private CustomJTextField address;
 	private CustomJTextField phone;
+	
+	private int user_id;
 
-	public Cart() {
+	public Cart(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
 		setLayout(new BorderLayout(0, 0));
+		this.user_id = user_id;
 		
 		JPanel mycart = new JPanel();
 		mycart.setBackground(new Color(255, 255, 255));
@@ -196,4 +199,6 @@ public class Cart extends JPanel {
 		checkout_center.add(shipping_fee2);
 		
 	}
+	
+	
 }

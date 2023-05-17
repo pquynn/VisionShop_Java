@@ -34,6 +34,8 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class AddUser extends JFrame {
 
@@ -203,6 +205,17 @@ public class AddUser extends JFrame {
 		contentPane.add(phoneLabel);
 		
 		 phone = new CustomJTextField("Điện thoại");
+		 phone.addKeyListener(new KeyAdapter() {
+		 	public void keyReleased(KeyEvent e) {
+		 		if((phone.getText().length() != 10 || !phone.getText().matches("[0-9]+"))&& !phone.getText().equals("Điện thoại")) {
+		 			phone_error.setText("Điện thoại không hợp lệ");
+		 			}
+		 	}
+		 	public void keyPressed(KeyEvent e) {
+		 		phone_error.setText("");
+		 			
+		 	}
+		 });
 		phone.setBounds(530, 167, 228, 32);
 		contentPane.add(phone);
 		phone.addFocusListener(new FocusAdapter() {
@@ -413,7 +426,6 @@ public class AddUser extends JFrame {
 		}
 		//phone
 		if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
-		phone_error.setText("Điện thoại không hợp lệ");
 		check = false;
 		}
 		return check;

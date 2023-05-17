@@ -48,8 +48,7 @@ public class Products extends JPanel {
 	private JComboBox search_by;
 	
 	private String name, category;
-	private int id, quantity;
-	private double price;
+	private int id, quantity, price;
 	private Date createdat, updatedat;
 	private DefaultTableModel model;
 	private TableEvent event;

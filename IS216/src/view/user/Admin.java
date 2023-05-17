@@ -36,11 +36,13 @@ public class Admin extends JPanel {
 	private Users usersPanel;
 	private Orders ordersPanel;
 	
-	public Admin() {
+	private int user_id;
+	
+	public Admin(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
 		setLayout(new BorderLayout(0, 0));
-		
+		this.user_id = user_id;
 		
 		//----------statistics
 		statisticsPanel = new Statistics();
@@ -267,5 +269,9 @@ public class Admin extends JPanel {
 			}
 		});
 				
+	}
+	
+	public void setId(int id) {
+		user_id = id;
 	}
 }

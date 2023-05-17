@@ -27,6 +27,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class EditProductCategory extends JFrame {
 
@@ -35,6 +37,8 @@ public class EditProductCategory extends JFrame {
 	private int id;
 	private CustomJTextField txt_id;
 	private CustomJTextField txt_name;
+	
+	private JLabel name_error;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -91,6 +95,17 @@ public class EditProductCategory extends JFrame {
 		txt_name.setBounds(196, 158, 173, 32);
 		txt_name.setTypingStyle();
 		contentPane.add(txt_name);
+		txt_name.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				if(checkDuplicate()) {
+					name_error.setText("Tên loại kính đã tồn tại");
+				}
+			}
+			public void keyPressed(KeyEvent e) {
+				name_error.setText("");
+			}
+		});
+		
 		
 		JButton editButton = new JButton("Lưu thay đổi");
 		editButton.addActionListener(new ActionListener() {
@@ -118,6 +133,12 @@ public class EditProductCategory extends JFrame {
 		cancelButton.setBackground(Color.WHITE);
 		cancelButton.setBounds(275, 233, 153, 32);
 		contentPane.add(cancelButton);
+		
+		name_error = new JLabel();
+		name_error.setForeground(Color.RED);
+		name_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		name_error.setBounds(196, 189, 230, 21);
+		contentPane.add(name_error);
 
 	}
 	
@@ -166,6 +187,27 @@ public class EditProductCategory extends JFrame {
 			}
 		}
 		
+		//check duplicate category_name
+		public boolean checkDuplicate() {
+			String name = txt_name.getText();
+			boolean isExist = false;
+			try {
+				Connection con = OracleConn.getConnection();
+				String sql = "select * from \"Category\" where category_name = ? and category_id <> ?";
+				PreparedStatement pst = con.prepareStatement(sql);
+				pst.setString(1, name);
+				pst.setInt(2, id);
+				ResultSet rs = pst.executeQuery();
+				
+				if(rs.next()) {
+					isExist = true;
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			return isExist;
+		}
 		
 		// to reset jtable after updating
 		public void resetTable() {
