@@ -17,12 +17,18 @@ import java.awt.event.ActionListener;
 
 import javax.swing.SwingConstants;
 
+import org.jfree.data.statistics.HistogramBin;
+
+import Connect.OracleConn;
 import view.Login;
 import view.admin.Statistics;
 
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class HomePage extends JFrame {
 	private Login login;
@@ -50,7 +56,7 @@ public class HomePage extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					HomePage frame = new HomePage(1);
+					HomePage frame = new HomePage(22);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,17 +74,19 @@ public class HomePage extends JFrame {
 		contentPane.setBackground(new Color(255, 255, 255));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		//----------user_id
 		this.user_id = user_id;
 		
 		//----------homePanel
-		homePanel = new Home();
+		homePanel = new Home(this.user_id).instanceHome;
 		contentPane.add(homePanel, BorderLayout.CENTER);
 		
 		//-----------
-		cartPanel = new Cart(this.user_id);
-		myorderPanel = new MyOrder(this.user_id);
-		accountPanel = new Account(this.user_id);
-		adminPanel = new Admin(this.user_id);
+		cartPanel = new Cart(this.user_id).instanceCart;
+		myorderPanel = new MyOrder(this.user_id).instanceMyOrder;
+		accountPanel = new Account(this.user_id).instanceAccount;
+		adminPanel = new Admin(this.user_id).instanceAdmin;
 
 		
 		//-----------navbar
@@ -176,6 +184,8 @@ public class HomePage extends JFrame {
 				accountPanel.setVisible(true);
 				myorderPanel.setVisible(false);
 				adminPanel.setVisible(false);
+				
+				accountPanel.setUserDetail();
 			}
 		});
 		
@@ -221,6 +231,8 @@ public class HomePage extends JFrame {
 				accountPanel.setVisible(false);
 				myorderPanel.setVisible(false);
 				adminPanel.setVisible(false);
+				
+				homePanel.setProductList(homePanel.getProductsList());
 			}
 		});
 
@@ -268,6 +280,9 @@ public class HomePage extends JFrame {
 				accountPanel.setVisible(false);
 				myorderPanel.setVisible(false);
 				adminPanel.setVisible(false);
+				
+				cartPanel.setOrderDetailToCart();
+				cartPanel.setUserDetail();
 			}
 		});
 		
@@ -315,6 +330,8 @@ public class HomePage extends JFrame {
 				accountPanel.setVisible(false);
 				myorderPanel.setVisible(true);
 				adminPanel.setVisible(false);
+				
+				myorderPanel.resetTable();
 			}
 		});
 		
@@ -362,6 +379,8 @@ public class HomePage extends JFrame {
 				accountPanel.setVisible(false);
 				myorderPanel.setVisible(false);
 				adminPanel.setVisible(true);
+				
+				////////////////////////////////HAM PHAN QUYEN 
 			}
 		});
 		
@@ -378,10 +397,37 @@ public class HomePage extends JFrame {
 				}
 			}
 		});
+		
+		setUIByRole();
 	}
-	
 	
 	public void setLogin(Login lg) {
 		login = lg;
+	}
+	
+	//ham phan quyen user
+	public void setUIByRole() {
+		if(isCustomer()) {
+			admin.setVisible(false);
+		}
+	}
+	
+	public boolean isCustomer() {
+		boolean check = false;
+		try {
+			Connection connection = OracleConn.getConnection();
+			String sql = "select * from \"User\" where user_id = ? and role_id = 3";
+			PreparedStatement pst = connection.prepareStatement(sql);
+			pst.setInt(1, user_id);
+			ResultSet rs = pst.executeQuery();
+			if(rs.next()) {
+				check = true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return check;
 	}
 }

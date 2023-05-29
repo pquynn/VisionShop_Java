@@ -1,4 +1,4 @@
-package view.admin;
+package view.seller;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -6,8 +6,6 @@ import javax.swing.JPanel;
 
 import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
-import components.CustomTable.ActionEditer;
-import components.CustomTable.ActionPanel;
 import components.CustomTable.MultiButtonTable;
 import components.CustomTable.TableEvent;
 
@@ -20,51 +18,54 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.regex.PatternSyntaxException;
 
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import Connect.OracleConn;
 
-import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
 
-public class Products extends JPanel {
-	private MultiButtonTable products_list;
-	private CustomJTextField search_product;
+import javax.swing.DefaultComboBoxModel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class Customers extends JPanel {
+
+	private MultiButtonTable users_list;
+	private JButton addButton;
+	private CustomJTextField search_user;
 	private JComboBox search_by;
+	private JLabel users_heading;
+	private Object[][] data;
+	private CustomScrollPane scrollPane;
 	
-	private String name, category;
-	private int id, quantity, price;
+	private String name, email, role, phone, address;
+	private int id;
 	private Date createdat, updatedat;
 	private DefaultTableModel model;
 	private TableEvent event;
-	private AddProduct addProduct;
-	private EditProduct editProduct;
+	private AddCustomer addCustomer;
+	private EditCustomer editCustomer;
+	public Customers instanceCustomer;
 	
-	public Products instanceProducts;
-	
-	
-	public Products() {
+
+	public Customers() {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 600);
 		setLayout(new BorderLayout(0, 0));
 		
-		instanceProducts = this;
+		instanceCustomer = this;
 		
+		//--content1
 		JPanel content1 = new JPanel();
 		content1.setBackground(new Color(255, 255, 255));
 		add(content1, BorderLayout.NORTH);
@@ -75,15 +76,15 @@ public class Products extends JPanel {
 		content1_east.setBackground(new Color(255, 255, 255));
 		content1.add(content1_east, BorderLayout.EAST);
 		content1_east.setLayout(null);
-		content1_east.setPreferredSize(new Dimension(200, 100));
+		content1_east.setPreferredSize(new Dimension(300, 100));
 		
-		JButton addButton = new JButton("+Thêm");
+		addButton = new JButton("+Thêm");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				createNewAddProduct();
+				createNewAddCustomer();
 			}
 		});
-		addButton.setBounds(80, 48, 85, 23);
+		addButton.setBounds(175, 48, 85, 23);
 		content1_east.add(addButton);
 		addButton.setForeground(Color.WHITE);
 		addButton.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -94,46 +95,47 @@ public class Products extends JPanel {
 		content1.add(content1_center, BorderLayout.CENTER);
 		content1_center.setLayout(null);
 		
-		JLabel products_heading = new JLabel("Sản phẩm");
-		products_heading.setFont(new Font("SansSerif", Font.BOLD, 24));
-		products_heading.setBounds(27, 10, 305, 40);
-		content1_center.add(products_heading);
+		users_heading = new JLabel("Khách hàng");
+		users_heading.setFont(new Font("SansSerif", Font.BOLD, 24));
+		users_heading.setBounds(27, 10, 305, 40);
+		content1_center.add(users_heading);
 		
 		search_by = new JComboBox();
-		search_by.setModel(new DefaultComboBoxModel(new String[] {"ID", "Tên SP", "Phân loại", "Giá", "SL", "Ngày thêm", "Ngày cập nhật"}));
+		search_by.setModel(new DefaultComboBoxModel(new String[] {"ID", "Họ tên", "Email", "Điện thoại", "Tham gia", "Cập nhật"}));
 		search_by.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		search_by.setBorder(null);
 		search_by.setBackground(Color.WHITE);
-		search_by.setBounds(274, 47, 122, 25);
+		search_by.setBounds(273, 48, 122, 25);
 		content1_center.add(search_by);
 		
-		search_product = new CustomJTextField("Tìm kiếm sản phẩm");
-		search_product.setBounds(27, 46, 237, 27);
-		content1_center.add(search_product);
-		search_product.addFocusListener(new FocusAdapter() {
+		search_user = new CustomJTextField("Tìm kiếm khách hàng");
+		search_user.setBounds(27, 47, 237, 27);
+		content1_center.add(search_user);
+		search_user.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
-				if(search_product.getText().equals("Tìm kiếm sản phẩm")) {
-					search_product.setText("");
-					search_product.requestFocus();
-					search_product.setTypingStyle();
+				if(search_user.getText().equals("Tìm kiếm khách hàng")) {
+					search_user.setText("");
+					search_user.requestFocus();
+					search_user.setTypingStyle();
 				}
 			}
 			
 			public void focusLost(FocusEvent e) {
-				if(search_product.getText().length() == 0) {
-					search_product.setDefaultStyle();
-					search_product.setText("Tìm kiếm sản phẩm");
+				if(search_user.getText().length() == 0) {
+					search_user.setDefaultStyle();
+					search_user.setText("Tìm kiếm khách hàng");
 				}
 			}
 		});
-		search_product.addKeyListener(new KeyAdapter() {
+		search_user.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
-				String query = search_product.getText().toLowerCase();
+				String query = search_user.getText().toLowerCase();
 				searchby(query, search_by.getSelectedIndex());
 			}
 		});
 		
 		
+		//--content2
 		JPanel content2 = new JPanel();
 		content2.setBackground(new Color(255, 255, 255));
 		add(content2, BorderLayout.CENTER);
@@ -159,62 +161,62 @@ public class Products extends JPanel {
 		
 		//----------------------------------
 		//Table
-		products_list = new MultiButtonTable();
-		products_list.setModel(new DefaultTableModel(
+		
+		users_list = new MultiButtonTable();
+		users_list.setModel(new DefaultTableModel(
 				new Object[][] {},
-				new String[] {"ID", "Tên SP", "Phân loại", "Giá", "SL", "Ngày thêm", "Cập nhật", "Thao tác"}
+				new String[] {"ID", "Họ tên", "Email", "Điện thoại", "Tham gia", "Cập nhật", "Thao tác"}
 		));
 		
 		//action column event
 		setActionColumnEvent();
-		products_list.setEvent(event);
-		products_list.customTable();
-		setProductsToTable();
+		users_list.setEvent(event);
+		users_list.customTable();
+		setUsersToTable();
 		
 		//custom column
-		customColumnN(0,5);
-		customColumnN(3,15);
-		customColumnN(4,15);
-		customColumnN(5,15);
-		customColumnN(6,15);
-		
+		customColumnN(0,10);
+		customColumnN(3,20);
+		customColumnN(4,20);
+		customColumnN(5,20);
+
 		//create scrollpane
-		CustomScrollPane scrollPane = new CustomScrollPane();
+		scrollPane = new CustomScrollPane();
 		content2.add(scrollPane, BorderLayout.CENTER);
-		scrollPane.setViewportView(products_list);
+		scrollPane.setViewportView(users_list);
 		
 		//sort table by column
 		sort();
 	}
-		
+	
+	
 	//custom column by index
 	public void customColumnN(int index, int w) {
 		DefaultTableCellRenderer center = new DefaultTableCellRenderer();	
 		center.setHorizontalAlignment( JLabel.CENTER );
-		products_list.getColumnModel().getColumn(index).setPreferredWidth(w);
-		products_list.getColumnModel().getColumn(index).setCellRenderer(center);
+		users_list.getColumnModel().getColumn(index).setPreferredWidth(w);
+		users_list.getColumnModel().getColumn(index).setCellRenderer(center);
 		
 	}
 	
-	//set products to jtable
-	public void setProductsToTable() {
+	//set User to jtable
+	public void setUsersToTable() {
 		try {
 			Connection conn = OracleConn.getConnection();
 			java.sql.Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery
-				("select * from Glasses, \"Category\" where Glasses.category_id=\"Category\".category_id order by glasses_id"); 
+				("select user_id, full_name, email, phone, created_at, updated_at from \"User\" where role_id = 3 order by user_id");
 			
 			while(rs.next()) {
-				id = rs.getInt("glasses_id");
-				name = rs.getString("glasses_name");
-				quantity =rs.getInt("quantity");
-				category = rs.getString("category_name");
-				price = rs.getInt("price"); 
+				id = rs.getInt("user_id");
+				name = rs.getString("full_name");
+				email =rs.getString("email");
+				phone = rs.getString("phone");
 				createdat = rs.getDate("created_at");
 				updatedat = rs.getDate("updated_at");
 				
-				Object[] objects= {id, name, category, price, quantity, createdat, updatedat, null}; 
-				model = (DefaultTableModel)products_list.getModel();
+				Object[] objects= {id, name, email, phone, createdat, updatedat};
+				model = (DefaultTableModel)users_list.getModel();
 				model.addRow(objects);
 			}
 			
@@ -225,42 +227,43 @@ public class Products extends JPanel {
 	
 	// set event to Action column(edit, delete)
 	public void setActionColumnEvent() {
-		model = (DefaultTableModel) products_list.getModel();
+		model = (DefaultTableModel) users_list.getModel();
 		event = new TableEvent() {
 		
 		public void onEdit(int row) {
-				int id = (int)model.getValueAt(products_list.getSelectedRow(), 0);
-				createEditProduct(id);
+				int id = (int)model.getValueAt(users_list.getSelectedRow(), 0);
+				createEditCustomer(id);
+				
 		}
 		
 		public void onDelete(int row) {
-			int ret = JOptionPane.showConfirmDialog(null, "Xác nhận xóa sản phẩm", "Xóa", JOptionPane.YES_NO_OPTION);
+			int ret = JOptionPane.showConfirmDialog(null, "Xác nhận xóa khách hàng", "Xóa", JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.YES_OPTION){
-				if (products_list.isEditing()) {
-					products_list.getCellEditor().stopCellEditing();
+				if (users_list.isEditing()) {
+					  users_list.getCellEditor().stopCellEditing();
 	                }
 				  
-				  int id = (int)model.getValueAt(products_list.getSelectedRow(), 0);
-				  deleteGlassesById(id); 
-				  model.removeRow(products_list.getSelectedRow());
+				  int id = (int)model.getValueAt(users_list.getSelectedRow(), 0);
+				  deleteUserById(id);
+				  model.removeRow(users_list.getSelectedRow());
 			}
 		}
 	};
 	}
 	
 	//delete user
-	public void deleteGlassesById(int id) {
+	public void deleteUserById(int id) {
 		try {
 			Connection conn = OracleConn.getConnection();
-			String sql = "delete from Glasses where glasses_id = ?";
+			String sql = "delete from \"User\" where user_id = ?";
 			PreparedStatement pst = conn.prepareStatement(sql);
 			pst.setInt(1, id);
 			
 			int rowcount = pst.executeUpdate();
 			if(rowcount > 0) 
-				JOptionPane.showMessageDialog(this, "Xóa sản phẩm thành công");
+				JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công");
 			else 
-				JOptionPane.showMessageDialog(this, "Xóa sản phẩm không thành công");
+				JOptionPane.showMessageDialog(this, "Xóa khách hàng không thành công");
 				
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -269,43 +272,44 @@ public class Products extends JPanel {
 	
 	//clear table
 	public void clearTable() {
-		model = (DefaultTableModel) products_list.getModel();
+		model = (DefaultTableModel) users_list.getModel();
 		model.setRowCount(0);
 	}
+	
 	//reset table
 	public void resetTable() {
 		clearTable();
-		setProductsToTable();
+		setUsersToTable();
 	}
 	
-	//create new panel add product
-	public void createNewAddProduct() {
-		addProduct = new AddProduct();
-		addProduct.setProductPane(this);
-		addProduct.setVisible(true);
+	//create new panel adduser
+	public void createNewAddCustomer() {
+		addCustomer = new AddCustomer();
+		addCustomer.setUsersPanel(this);
+		addCustomer.setVisible(true);
 	}
 	
-	//create new panel edit product with id
-	public void createEditProduct(int id) {
-		editProduct = new EditProduct();
-		editProduct.setUsersPanel(this);
-		editProduct.setId(id);
-		editProduct.setProductDetailById();
-		editProduct.setVisible(true);
+	//create new panel edituser with id
+	public void createEditCustomer(int id) {
+		editCustomer = new EditCustomer();
+		editCustomer.setUsersPanel(this);
+		editCustomer.setId(id);
+		editCustomer.setUserDetailByID();
+		editCustomer.setVisible(true);
 	}
 	
 	
 	//sort table
 	public void sort() {
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
-		products_list.setRowSorter(sorter);
+		users_list.setRowSorter(sorter);
 	}
 	
 	
 	//search by column in table
 	public void searchby(String query, int searchColIndex) {
 		TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
-		products_list.setRowSorter(tr);
+		users_list.setRowSorter(tr);
 		
 		if (query.length() == 0) {
             tr.setRowFilter(null);
@@ -317,4 +321,5 @@ public class Products extends JPanel {
             }
         }
 	}
+
 }

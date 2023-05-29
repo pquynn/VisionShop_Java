@@ -68,5 +68,34 @@ public class MultiButtonTable extends JTable{
 		setFont(new Font("SansSerif", Font.PLAIN, 13));
 	
     }
+    
+    public void customTableWithOutActionCol() {
+        //custom table
+		setRowSelectionAllowed(false);
+		setShowVerticalLines(false);
+		setBorder(null);
+		setForeground(new Color(0, 0, 0));
+		setRowHeight(40);
+		setGridColor(new Color(211, 211, 211));
+		
+		//custom table header
+		getTableHeader().setBackground(Color.WHITE);
+		getTableHeader().setForeground(Color.black);
+		getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+		getTableHeader().setPreferredSize(new Dimension(100, 30));
+		
+		
+		for(int i = 0; i < getColumnModel().getColumnCount(); i++){
+			getColumnModel().getColumn(i).setResizable(false);
+		}
+		
+		//set uneditable cell in table
+		for (int c = 0; c < getColumnCount(); c++){
+		    Class<?> col_class = getColumnClass(c);
+		    setDefaultEditor(col_class, null);        
+		}
+		setBackground(new Color(255, 255, 255));
+		setFont(new Font("SansSerif", Font.PLAIN, 13));
+    }
 }
 

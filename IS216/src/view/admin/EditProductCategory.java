@@ -57,7 +57,7 @@ public class EditProductCategory extends JFrame {
 	public EditProductCategory() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		setBounds(560, 250, 566, 358);
+		setBounds(570, 260, 566, 358);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(255, 255, 255));
 		contentPane.setBorder(null);

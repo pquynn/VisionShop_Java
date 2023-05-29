@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import Connect.OracleConn;
-import view.user.MyOrder;
+import Printer.Printer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,26 +15,20 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
-import java.awt.Image;
 
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 
 import java.awt.Dimension;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
-import java.sql.Clob;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 
-public class EditOrderDetail extends JFrame {
+public class EditOrder extends JFrame {
 
 	private JPanel contentPane;
 	private JTable product_list;
@@ -46,8 +40,9 @@ public class EditOrderDetail extends JFrame {
 	private JLabel txt_totalglasses;
 	private JLabel txtaddress;
 	private JLabel txtstate;
-	private JButton btCompleted;
+	private JButton btPayment;
 	private JButton btDelivery;
+	private JButton btPrint;
 	
 	private DefaultTableModel model;
 	private Orders orders;
@@ -67,7 +62,7 @@ public class EditOrderDetail extends JFrame {
 	}
 
 	
-	public EditOrderDetail(int order_id) {
+	public EditOrder(int order_id) {
 		this.order_id = order_id;
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -128,7 +123,7 @@ public class EditOrderDetail extends JFrame {
 		order_day.setBounds(443, 50, 80, 32);
 		north.add(order_day);
 		
-		 txtcreatedat = new JLabel("abc");
+		txtcreatedat = new JLabel("abc");
 		txtcreatedat.setHorizontalAlignment(SwingConstants.LEFT);
 		txtcreatedat.setForeground(Color.BLACK);
 		txtcreatedat.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -252,15 +247,36 @@ public class EditOrderDetail extends JFrame {
 		east.setBackground(new Color(255, 255, 255));
 		contentPane.add(east, BorderLayout.EAST);
 		east.setPreferredSize(new Dimension(50, 100));
+
+		btPrint = new JButton("In hóa đơn");
+		btPrint.setBounds(75, 22, 141, 32);
+		south.add(btPrint);
+		btPrint.setForeground(Color.WHITE);
+		btPrint.setFont(new Font("SansSerif", Font.BOLD, 16));
+		btPrint.setBackground(Color.BLACK);
+		btPrint.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Bạn muốn in hóa đơn", "In", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION) {
+					Printer printer = new Printer(contentPane);
+					printer.print();
+				}
+			}
+		});
 		
-		
-		
-		btCompleted = new JButton("Giao hàng thành công");
-		btCompleted.setForeground(Color.WHITE);
-		btCompleted.setFont(new Font("SansSerif", Font.BOLD, 16));
-		btCompleted.setBackground(Color.BLACK);
-		btCompleted.setBounds(600, 22, 213, 32);
-		south.add(btCompleted);
+		btPayment = new JButton("Đã thanh toán");
+		btPayment.setForeground(Color.WHITE);
+		btPayment.setFont(new Font("SansSerif", Font.BOLD, 16));
+		btPayment.setBackground(Color.BLACK);
+		btPayment.setBounds(600, 22, 213, 32);
+		south.add(btPayment);
+		btPayment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Xác nhận đơn hàng đã được thanh toán", "Đã thanh toán", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION)
+					setPaymentState();
+			}
+		});
 		
 		btDelivery = new JButton("Bắt đầu giao hàng");
 		btDelivery.setForeground(Color.WHITE);
@@ -268,6 +284,13 @@ public class EditOrderDetail extends JFrame {
 		btDelivery.setBackground(Color.BLACK);
 		btDelivery.setBounds(363, 22, 213, 32);
 		south.add(btDelivery);
+		btDelivery.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Xác nhận bắt đầu giao hàng", "Bắt đầu giao hàng", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION)
+					setDeliveryState();
+			}
+		});
 		
 		//set order detail by id
 		setOrderDetailById();
@@ -287,10 +310,6 @@ public class EditOrderDetail extends JFrame {
 		this.orders = orders;
 	}
 	
-	public void updateOrder() {
-		//update order state
-	}
-	
 	public void setOrderDetailById() {
 		try {
 			Connection conn = OracleConn.getConnection();
@@ -299,7 +318,7 @@ public class EditOrderDetail extends JFrame {
 			pst.setInt(1, order_id);
 			ResultSet rs = pst.executeQuery();
 			
-			while(rs.next()) {
+			if(rs.next()) {
 				txtname.setText(rs.getString("full_name"));
 				txtphone.setText(rs.getString("phone"));
 				txtemail.setText(rs.getString("email"));
@@ -309,6 +328,7 @@ public class EditOrderDetail extends JFrame {
 				txttotal_money.setText(String.valueOf(rs.getInt("total_money")));
 				txtstate.setText(rs.getString("\"order_state\""));
 			}
+			hideButton();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -316,31 +336,88 @@ public class EditOrderDetail extends JFrame {
 	}
 	
 	//set order detail to table
-		public void setOrderDetailToTable() {
-			String glasses_name;
-			int quantity, price, into_money, glasses_id;
+	public void setOrderDetailToTable() {
+		String glasses_name;
+		int quantity, price, into_money, glasses_id;
+		try {
+			Connection conn = OracleConn.getConnection();
+			String sql = "select * from Order_detail where order_id = ? ";
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setInt(1, order_id);
+			ResultSet rs = pst.executeQuery();
+			
+			while(rs.next()) {
+				quantity = rs.getInt("quantity");
+				price = rs.getInt("price");
+				into_money = rs.getInt("into_money");
+				glasses_name = rs.getString("glasses_name");
+		        
+				Object[] objects= {glasses_name, price, quantity, into_money};
+				model = (DefaultTableModel)product_list.getModel();
+				model.addRow(objects);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+		
+	//change order state to "đang giao hang"
+	public void setDeliveryState() {
+		try {
+			Connection connection = OracleConn.getConnection();
+			String sql = "update \"Order\" set \"order_state\" = 'Đang giao hàng' where order_id = ?";
+			PreparedStatement pst = connection.prepareStatement(sql);
+			pst.setInt(1, order_id);
+			
+			int rowcount = pst.executeUpdate();
+			if(rowcount > 0) {
+				txtstate.setText("Đang giao hàng");
+				hideButton();
+				orders.resetTable();
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//change order state to "da thanh toan"
+	public void setPaymentState() {
+		if(txtstate.getText().equals("Chờ giao hàng")) {
+			JOptionPane.showMessageDialog(this, "Không thành công. Đơn hàng chưa được giao.");
+		}
+		else {
 			try {
-				Connection conn = OracleConn.getConnection();
-				String sql = "select * from Order_detail where order_id = ? ";
-				PreparedStatement pst = conn.prepareStatement(sql);
+				Connection connection = OracleConn.getConnection();
+				String sql = "update \"Order\" set \"order_state\" = 'Đã thanh toán' where order_id = ?";
+				PreparedStatement pst = connection.prepareStatement(sql);
 				pst.setInt(1, order_id);
-				ResultSet rs = pst.executeQuery();
 				
-				while(rs.next()) {
-					quantity = rs.getInt("quantity");
-					price = rs.getInt("price");
-					into_money = rs.getInt("into_money");
-					glasses_name = rs.getString("glasses_name");
-			        
-					Object[] objects= {glasses_name, price, quantity, into_money};
-					model = (DefaultTableModel)product_list.getModel();
-					model.addRow(objects);
+				int rowcount = pst.executeUpdate();
+				if(rowcount > 0) {
+					txtstate.setText("Đã thanh toán");
+					hideButton();
+					orders.resetTable();
 				}
+				
 				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	//public disable button
+	public void hideButton() {
+		if(txtstate.getText().equals("Đang giao hàng")) 
+			btDelivery.setVisible(false);
+		if(txtstate.getText().equals("Đã thanh toán")) {
+			btDelivery.setVisible(false);
+			btPayment.setVisible(false);
+		}
+	}
 }
 
 				

@@ -8,5 +8,10 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Quyen/OneDrive - Trường ĐH CNTT - University of Information Technology/Tài liệu/ojdbc11.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/ojdbc8-21.1.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/mail.jar/mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/activation.jar/activation.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/javax.mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/JFreeChart/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/JFreeChart/jfreechart-1.0.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -6,34 +6,60 @@ import javax.swing.JPanel;
 
 import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
+import components.ProductPanels.ProductInCart;
 import components.ProductPanels.ProductThumbnail;
 
 import java.awt.BorderLayout;
 
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+import Connect.OracleConn;
+
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.regex.PatternSyntaxException;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class Home extends JPanel {
-
-	private CustomJTextField search_bar;
+	private JPanel content_center;
+	private ArrayList<Object[]> products_list;
+	private CustomScrollPane scrollPane;
+	private JComboBox category_list;
 	
-	public Home() {
+	private int user_id;
+
+	public Home instanceHome;
+	
+	public Home(int user_id) {
+		this.user_id = user_id;
+		instanceHome = this;
+		
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
 		setLayout(new BorderLayout(0, 0));
-		
 		
 		JPanel content_south = new JPanel();
 		content_south.setBackground(new Color(255, 255, 255));
@@ -53,140 +79,170 @@ public class Home extends JPanel {
 		JPanel content_north = new JPanel();
 		content_north.setBackground(new Color(255, 255, 255));
 		add(content_north, BorderLayout.NORTH);
-		content_north.setPreferredSize(new Dimension(100, 80));
+		content_north.setPreferredSize(new Dimension(100, 50));
 		content_north.setLayout(null);
 		
-		search_bar = new CustomJTextField("Tìm kiếm sản phẩm");
-		search_bar.setBounds(128, 23, 237, 27);
-		content_north.add(search_bar);
-		search_bar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		JLabel filter = new JLabel("Lọc theo:");
+		filter.setHorizontalAlignment(SwingConstants.RIGHT);
+		filter.setForeground(Color.GRAY);
+		filter.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		filter.setBounds(34, 10, 71, 32);
+		content_north.add(filter);
+		
+		category_list = new JComboBox();
+		category_list.setForeground(new Color(169, 169, 169));
+		category_list.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		category_list.setBorder(null);
+		category_list.setBackground(Color.WHITE);
+		category_list.setBounds(115, 14, 140, 25);
+		content_north.add(category_list);
+		setCategoryItem();
+		category_list.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				setProductList(getProductsListByCategory());
 			}
 		});
 		
-		search_bar.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				if(search_bar.getText().equals("Tìm kiếm sản phẩm")) {
-					search_bar.setText("");
-					search_bar.requestFocus();
-					search_bar.setTypingStyle();
-				}
-			}
-			
-			public void focusLost(FocusEvent e) {
-				if(search_bar.getText().length() == 0) {
-					search_bar.setDefaultStyle();
-					search_bar.setText("Tìm kiếm sản phẩm");
-				}
-			}
-		});
-		
-		JComboBox search_by = new JComboBox();
-		search_by.setBounds(33, 24, 89, 25);
-		search_by.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		search_by.setBackground(new Color(255, 255, 255));
-		search_by.setBorder(null);
-
-		content_north.add(search_by);
-		
-		JComboBox sort_by = new JComboBox();
-		sort_by.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		sort_by.setBorder(null);
-		sort_by.setBackground(Color.WHITE);
-		sort_by.setBounds(486, 24, 134, 25);
-		content_north.add(sort_by);
-		
-		JLabel sorbyLabel = new JLabel("Sắp xếp theo:");
-		sorbyLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		sorbyLabel.setForeground(Color.GRAY);
-		sorbyLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		sorbyLabel.setBounds(392, 23, 96, 27);
-		content_north.add(sorbyLabel);
-		
-		CustomScrollPane scrollPane = new CustomScrollPane();
+		scrollPane = new CustomScrollPane();
 		scrollPane.setViewportBorder(null);
 		add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setBorder(null);
 		
-		
-		JPanel content_center = new JPanel();
-		content_center.setBorder(null);
-		content_center.setBackground(new Color(255, 255, 255));
-		scrollPane.setViewportView(content_center);
-		content_center.setLayout(new GridLayout(0, 4, 20, 12));
-		
-		
-		//---------------------------------------------------
-		
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		content_center.add(createEmptyJPanel());
-		
-		/*content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		content_center.add(new ProductThumbnail());
-		*/
-		/*JPanel product_row_1 = new JPanel();
-		product_row_1.setBackground(new Color(255, 255, 255));
-		content_center.add(product_row_1);
-		product_row_1.setLayout(new GridLayout(1, 4, 20, 20));
-		
-		ProductThumbnail productThumbnail = new ProductThumbnail();
-		product_row_1.add(productThumbnail);
-		product_row_1.add(new ProductThumbnail());
-		product_row_1.add(new ProductThumbnail());
-		product_row_1.add(new ProductThumbnail());
-		
-		
-		JPanel product_row_2 = new JPanel();
-		product_row_2.setBackground(new Color(255, 255, 255));
-		content_center.add(product_row_2);
-		product_row_2.setLayout(new GridLayout(1, 4, 20, 20));
-		
-		product_row_2.add(new ProductThumbnail());
-		product_row_2.add(new ProductThumbnail());
-		product_row_2.add(new ProductThumbnail());
-		product_row_2.add(new ProductThumbnail());
-		
-		JPanel product_row_3 = new JPanel();
-		product_row_3.setBackground(new Color(255, 255, 255));
-		content_center.add(product_row_3);
-		product_row_3.setLayout(new GridLayout(1, 4, 20, 20));
-		
-		product_row_3.add(new ProductThumbnail());
-		product_row_3.add(new ProductThumbnail());
-		product_row_3.add(new ProductThumbnail());
-		product_row_3.add(new ProductThumbnail());
-		*/
-		
+		//display product list
+		setProductList(getProductsList());
+	
 	}
 	
 	public JPanel createEmptyJPanel() {
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.white);
 		return panel;
+	}
+	
+	//get product list from db
+	public ArrayList<Object[]> getProductsList(){
+		ArrayList<Object[]> products_list = new ArrayList<Object[]>();
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = "select glasses_id, glasses_name, price, image from Glasses order by glasses_id";
+			Statement pst = con.createStatement();
+			ResultSet rs = pst.executeQuery(sql);
+			
+			while(rs.next()) {
+				Object[] row = new Object[4];
+				row[0] = rs.getInt(1);
+				row[1] = rs.getString(2);
+				row[2] = rs.getInt(3);
+				row[3] = rs.getBytes(4);
+				products_list.add(row);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return products_list;
+	}
+	
+	// set products list
+	public void setProductList(ArrayList<Object[]> products_list) {
+		//create panel to hold products_list
+		content_center = new JPanel();
+		content_center.setBorder(null);
+		content_center.setBackground(new Color(255, 255, 255));
+		scrollPane.setViewportView(content_center);
+		content_center.setLayout(new GridLayout(0, 4, 20, 20));
+		
+		if(products_list.isEmpty() == false) {
+			for(Object[] i : products_list) {
+				int id = (int) i[0];
+				String name = String.valueOf(i[1]);
+				String price = String.valueOf(i[2]);
+				byte[] imagedata = (byte[]) i[3];
+				
+				ProductThumbnail p = new ProductThumbnail(id, name, price, imagedata);
+				content_center.add(p);
+				p.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						new ProductDetail(id, user_id).setVisible(true);
+					}
+				});
+			}
+			for(int i = 0; i < 12 - products_list.size(); i++)
+				content_center.add(createEmptyJPanel());
+				
+		}
+	}
+	
+	  
+    //set category name to combobox category
+    public void setCategoryItem() {
+    	category_list.addItem("Tất cả");
+    	try {
+    		Connection con = OracleConn.getConnection();
+			String sql = "select * from \"Category\" order by category_id";
+			Statement statement = con.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			
+			while(rs.next()) {
+				category_list.addItem(rs.getString("category_name"));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    //get category_id by category_name
+    public int findIDByCategoryName(String cn) {
+    	int id = 0;
+    	try {
+    		Connection con = OracleConn.getConnection();
+			String sql = "select category_id from \"Category\" where category_name=?";
+			PreparedStatement statement = con.prepareStatement(sql);
+			statement.setString(1, cn);
+			ResultSet rs = statement.executeQuery();
+			
+			while(rs.next()) {
+				id = rs.getInt("category_id");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return id;
+    }
+	
+	//get product list from db
+	public ArrayList<Object[]> getProductsListByCategory(){
+		String category_name = category_list.getSelectedItem().toString();
+		if(category_name.equals("Tất cả")) {
+			return getProductsList();
+		}
+		else {
+			int category_id = findIDByCategoryName(category_name);
+			ArrayList<Object[]> products_list = new ArrayList<Object[]>();
+			
+			try {
+				Connection con = OracleConn.getConnection();
+				String sql = "select glasses_id, glasses_name, price, image from Glasses where category_id = ? order by glasses_id";
+				PreparedStatement pst = con.prepareStatement(sql);
+				pst.setInt(1, category_id);
+				ResultSet rs = pst.executeQuery();
+				
+				while(rs.next()) {
+					Object[] row = new Object[4];
+					row[0] = rs.getInt(1);
+					row[1] = rs.getString(2);
+					row[2] = rs.getInt(3);
+					row[3] = rs.getBytes(4);
+					products_list.add(row);
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			return products_list;
+		}
 	}
 }

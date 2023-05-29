@@ -205,7 +205,7 @@ public class EditProduct extends JFrame {
 		contentPane.add(categoryLabel);
 		
 		category = new JComboBox();
-		category.setForeground(new Color(169, 169, 169));
+		category.setForeground(new Color(105,105,105));
 		category.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		category.setBackground(new Color(255, 255, 255));
 		category.setBounds(532, 387, 237, 29);
@@ -262,7 +262,7 @@ public class EditProduct extends JFrame {
 		
 		});
 		image.setBackground(new Color(192, 192, 192));
-		image.setBounds(110, 185, 252, 225);
+		image.setBounds(90, 185, 290, 225);
 		contentPane.add(image);
 		
 		name_error = new JLabel();

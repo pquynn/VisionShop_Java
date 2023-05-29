@@ -5,33 +5,57 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
+import Connect.OracleConn;
 import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
 import components.CustomTable.MultiButtonTable;
+import components.CustomTable.TableEvent;
+import view.admin.AddOrder;
+import view.admin.EditOrderDetail;
 
 import java.awt.BorderLayout;
 import javax.swing.JTable;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.border.LineBorder;
 import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class MyOrder extends JPanel{
 	private JTable orders_list;
 	private CustomJTextField search_order;
-	private int user_id;
+	private JComboBox table_col;
+	
+	private DefaultTableModel model;
+	private int user_id = -1;
+	public MyOrder instanceMyOrder;
 	
 	public MyOrder(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
 		setLayout(new BorderLayout(0, 0));
+		
 		this.user_id = user_id;
+		instanceMyOrder = this;
 		
 		JPanel content1 = new JPanel();
 		content1.setBackground(new Color(255, 255, 255));
@@ -52,7 +76,7 @@ public class MyOrder extends JPanel{
 		search_order.setColumns(10);
 		search_order.setCaretPosition(0);
 		search_order.setBorder(new LineBorder(new Color(211, 211, 211)));
-		search_order.setBounds(127, 82, 237, 27);
+		search_order.setBounds(27, 82, 237, 27);
 		content1.add(search_order);
 		search_order.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
@@ -71,26 +95,21 @@ public class MyOrder extends JPanel{
 			}
 		});
 		
-		JLabel sorbyLabel = new JLabel("Sắp xếp theo:");
-		sorbyLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		sorbyLabel.setForeground(Color.GRAY);
-		sorbyLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		sorbyLabel.setBounds(391, 82, 96, 27);
-		content1.add(sorbyLabel);
+		search_order.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				String query = search_order.getText().toLowerCase();
+				searchby(query, table_col.getSelectedIndex());
+			}
+		});
 		
-		JComboBox sort_by = new JComboBox();
-		sort_by.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		sort_by.setBorder(null);
-		sort_by.setBackground(Color.WHITE);
-		sort_by.setBounds(485, 83, 134, 25);
-		content1.add(sort_by);
 		
-		JComboBox search_by = new JComboBox();
-		search_by.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		search_by.setBorder(null);
-		search_by.setBackground(Color.WHITE);
-		search_by.setBounds(28, 84, 89, 25);
-		content1.add(search_by);
+		table_col = new JComboBox();
+		table_col.setModel(new DefaultComboBoxModel(new String[] {"ID", "Mã KH", "Tên KH", "Điện Thoại", "Tổng SP", "Tổng tiền", "Trạng thái", "Ngày mua", "Ngày cập nhật"}));
+		table_col.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		table_col.setBorder(null);
+		table_col.setBackground(Color.WHITE);
+		table_col.setBounds(274, 83, 122, 25);
+		content1.add(table_col);
 		
 		JPanel content2 = new JPanel();
 		content2.setBackground(new Color(255, 255, 255));
@@ -118,14 +137,123 @@ public class MyOrder extends JPanel{
 		CustomScrollPane scrollPane = new CustomScrollPane();
 		content2.add(scrollPane, BorderLayout.CENTER);
 		
+		//----------------------------------
+		//Table
+		orders_list = new JTable();
+		orders_list.setModel(new DefaultTableModel(
+				new Object[][] {},
+				new String[] {"ID", "Mã KH", "Tên KH", "Điện thoại", "Tổng SP", "Tổng tiền", "Trạng thái", "Ngày mua", "Cập nhật"}
+		));
+		orders_list.setRowSelectionAllowed(false);
+		orders_list.setShowVerticalLines(false);
+		orders_list.setBorder(null);
+		orders_list.setForeground(new Color(0, 0, 0));
+		orders_list.setRowHeight(50);
+		orders_list.setGridColor(new Color(211, 211, 211));
+		
+		orders_list.getTableHeader().setBackground(Color.WHITE);
+		orders_list.getTableHeader().setForeground(Color.black);
+		orders_list.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+		orders_list.getTableHeader().setPreferredSize(new Dimension(100, 30));
+		setOrdersToTable();
+		orders_list.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int index = orders_list.getSelectedRow();
+				int order_id = (int) model.getValueAt(index, 0);
+				new OrderDetail(order_id).setVisible(true);
+			}
+		});
+		customColumnN(0, 10);
+		customColumnN(1, 10);
+		customColumnN(3, 20);
+		customColumnN(4, 10);
+		customColumnN(5, 20);
+		customColumnN(6, 30);
+		customColumnN(7, 20);
+		customColumnN(8, 20);
+		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();	
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+		scrollPane.setViewportView(orders_list);
+		
+		//sort table by column
+		sort();
+		
+	}
+			
+	//custom column by index
+	public void customColumnN(int index, int w) {
+		DefaultTableCellRenderer center = new DefaultTableCellRenderer();	
+		center.setHorizontalAlignment( JLabel.CENTER );
+		orders_list.getColumnModel().getColumn(index).setPreferredWidth(w);
+		orders_list.getColumnModel().getColumn(index).setCellRenderer(center);
+		
+	}
+		
+	//set orders to table
+	public void setOrdersToTable() {
+		 int order_id;
+		 String user_name, phone, order_state;
+		 int total_money, total_glasses;
+		 Date createdat, updatedat;
 		
 		
-		String[] header = {	"ID", "Mã khách hàng", "Ngày mua", "Điện thoại", "Tổng tiền", "Trạng thái", "Thao t\u00E1c"};
-	
-	
+		try {
+			Connection conn = OracleConn.getConnection();
+			String sql = "select * from \"Order\" where user_id = ? and \"order_state\" <> 'Chưa xác nhận' order by order_id";
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setInt(1, user_id);
+			ResultSet rs = pst.executeQuery();
+				
+			while(rs.next()) {
+				user_id = rs.getInt("user_id");
+				order_id = rs.getInt("order_id");
+				user_name = rs.getString("full_name");
+				phone =rs.getString("phone");
+				order_state = rs.getString("order_state");
+				total_money = rs.getInt("total_money");
+				total_glasses = rs.getInt("total_glasses");
+				createdat = rs.getDate("created_at");
+				updatedat = rs.getDate("updated_at");
+				
+				Object[] objects= {order_id, user_id, user_name, phone, total_glasses, total_money, order_state, createdat, updatedat};
+				model = (DefaultTableModel)orders_list.getModel();
+				model.addRow(objects);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void setId(int id) {
-		user_id = id;
+	//reset table
+	public void resetTable() {
+		model = (DefaultTableModel) orders_list.getModel();
+		model.setRowCount(0);
+		setOrdersToTable();
+	}
+	
+	//sort by
+	public void sort() {
+		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
+		orders_list.setRowSorter(sorter);
+	}
+	
+	//search by column in table
+	public void searchby(String query, int searchColIndex) {
+		TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
+		orders_list.setRowSorter(tr);
+		
+		if (query.length() == 0) {
+            tr.setRowFilter(null);
+        } else {
+            try {
+                tr.setRowFilter(RowFilter.regexFilter("^(?i)" + query, searchColIndex));
+            } catch (PatternSyntaxException pse) {
+                System.out.println("Bad regex pattern");
+            }
+        }
+		
 	}
 }

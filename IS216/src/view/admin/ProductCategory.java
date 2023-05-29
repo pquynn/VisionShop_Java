@@ -64,11 +64,16 @@ public class ProductCategory extends JPanel {
 	private int id;
 	private String name;
 	private Date created, updated;
+	private int user_id;
+	public ProductCategory instanceCategory;
 	
-	public ProductCategory() {
+	public ProductCategory(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 600);
 		setLayout(new BorderLayout(0, 0));
+		
+		this.user_id = user_id;
+		instanceCategory = this;
 		
 		JPanel content1 = new JPanel();
 		content1.setBackground(new Color(255, 255, 255));
@@ -250,6 +255,12 @@ public class ProductCategory extends JPanel {
 	public void clearTable() {
 		model = (DefaultTableModel) categories_list.getModel();
 		model.setRowCount(0);
+	}
+	
+	//reset table
+	public void resetTable() {
+		clearTable();
+		setCategoryToTable();
 	}
 	
 	//delete category

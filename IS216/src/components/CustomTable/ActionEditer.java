@@ -28,18 +28,6 @@ public class ActionEditer extends DefaultCellEditor implements TableCellEditor {
     	super(new JCheckBox());
     	this.event = event;
     	
-    	/*edit_deletePane.addActionListener(new ActionListener() {
-            
-            public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                   
-                    public void run() {
-                        stopCellEditing();
-                    }
-                });
-            }
-        });*/
-        
     }
     
    

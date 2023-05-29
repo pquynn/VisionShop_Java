@@ -204,8 +204,7 @@ public class Login extends JFrame {
 		contentPane.add(password_error);
 		forgetPassword.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				new ForgotPassword().setVisible(true);;
-				dispose();
+				new ForgotPassword().setVisible(true);
 			}
 			
 			public void mouseEntered(MouseEvent e) {

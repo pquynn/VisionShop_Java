@@ -58,6 +58,7 @@ public class Account extends JPanel {
 	private JLabel email_error;
 	private JLabel phone_error;
 	
+	public Account instanceAccount;
 	private int user_id;
 	private JFileChooser file;
 	private File selectedFile;
@@ -69,7 +70,9 @@ public class Account extends JPanel {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
 		setLayout(new BorderLayout(0, 0));
+		
 		this.user_id = user_id;
+		instanceAccount = this;
 		
 		JPanel content_heading = new JPanel();
 		content_heading.setBackground(new Color(255, 255, 255));
@@ -117,26 +120,18 @@ public class Account extends JPanel {
 		avatar.setBounds(172, 86, 150, 150);
 		avatar_setting.add(avatar);
 		
-		/*JButton changeAvaButton_1 = new JButton("Thay đổi avatar");
-		changeAvaButton_1.setForeground(Color.BLACK);
-		changeAvaButton_1.setFont(new Font("SansSerif", Font.BOLD, 16));
-		changeAvaButton_1.setBackground(Color.WHITE);
-		changeAvaButton_1.setBounds(172, 44, 152, 32);
-		avatar_setting.add(changeAvaButton_1);
-		*/
-		
 		name_display = new JLabel("name");
 		name_display.setHorizontalAlignment(SwingConstants.CENTER);
 		name_display.setForeground(new Color(105, 105, 105));
 		name_display.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		name_display.setBounds(182, 232, 140, 32);
+		name_display.setBounds(139, 232, 216, 32);
 		avatar_setting.add(name_display);
 		
 		email_display = new JLabel("abc@gmail.com");
 		email_display.setHorizontalAlignment(SwingConstants.CENTER);
 		email_display.setForeground(SystemColor.controlDkShadow);
 		email_display.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		email_display.setBounds(182, 259, 140, 25);
+		email_display.setBounds(106, 259, 284, 25);
 		avatar_setting.add(email_display);
 		
 		JPanel info_setting = new JPanel();
@@ -397,65 +392,65 @@ public class Account extends JPanel {
 		}
 		
 		//validation
-				public boolean validateUser() {
-					String full_name = name.getText();
-					String email = this.email.getText();
-					String phone = this.phone.getText();
-					
-					boolean check = true;
-					//full name
-					if (full_name.equals("")) {
-						name_error.setText("Yêu cầu nhập Họ tên.");
-						check = false;
-					}
-					//email
-					if (email.equals("")) {
-						email_error.setText("Yêu cầu nhập Email.");
-						check = false;
-					}
-					else if (!email.matches("^.+@.+\\..+$")) {
-							email_error.setText("Email không hợp lệ.");
-							check = false;
-						}
-					else if (checkDuplicateUser()) {
-						email_error.setText("Email này đã tồn tại");
-					}
-					
-					//phone
-					if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+		public boolean validateUser() {
+			String full_name = name.getText();
+			String email = this.email.getText();
+			String phone = this.phone.getText();
+			
+			boolean check = true;
+			//full name
+			if (full_name.equals("")) {
+				name_error.setText("Yêu cầu nhập Họ tên.");
+				check = false;
+			}
+			//email
+			if (email.equals("")) {
+				email_error.setText("Yêu cầu nhập Email.");
+				check = false;
+			}
+			else if (!email.matches("^.+@.+\\..+$")) {
+					email_error.setText("Email không hợp lệ.");
 					check = false;
-					}
-					return check;
 				}
+			else if (checkDuplicateUser()) {
+				email_error.setText("Email này đã tồn tại");
+			}
+			
+			//phone
+			if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+			check = false;
+			}
+			return check;
+		}
+		
+		// check duplicate user 
+		public boolean checkDuplicateUser() {
+			String email = this.email.getText();
+			boolean isExist = false;
+			try {
+				Connection con = OracleConn.getConnection();
+				String sql = "select * from \"User\" where email = ? and user_id <> ?";
+				PreparedStatement pst = con.prepareStatement(sql);
+				pst.setString(1, email);
+				pst.setInt(2, user_id);
+				ResultSet rs = pst.executeQuery();
 				
-				// check duplicate user 
-				public boolean checkDuplicateUser() {
-					String email = this.email.getText();
-					boolean isExist = false;
-					try {
-						Connection con = OracleConn.getConnection();
-						String sql = "select * from \"User\" where email = ? and user_id <> ?";
-						PreparedStatement pst = con.prepareStatement(sql);
-						pst.setString(1, email);
-						pst.setInt(2, user_id);
-						ResultSet rs = pst.executeQuery();
-						
-						if(rs.next()) {
-							isExist = true;
-						}
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-					
-					return isExist;
+				if(rs.next()) {
+					isExist = true;
 				}
-				
-				// clear validation messages 
-				public void clearMessage() {
-					name_error.setText("");
-					email_error.setText("");
-					phone_error.setText("");
-				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return isExist;
+		}
+		
+		// clear validation messages 
+		public void clearMessage() {
+			name_error.setText("");
+			email_error.setText("");
+			phone_error.setText("");
+		}
 				
 }

@@ -8,6 +8,7 @@ import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
 import components.CustomTable.MultiButtonTable;
 import components.CustomTable.TableEvent;
+import view.user.OrderDetail;
 
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
@@ -25,6 +26,7 @@ import java.sql.ResultSet;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -37,15 +39,20 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Users extends JPanel {
 
 	private MultiButtonTable users_list;
+	private JButton addButton;
 	private CustomJTextField search_user;
 	private JComboBox search_by;
+	private JLabel users_heading;
 	private Object[][] data;
+	private CustomScrollPane scrollPane;
 	
-	private String name, email, role, phone;
+	private String name, email, role, phone, address;
 	private int id;
 	private Date createdat, updatedat;
 	private DefaultTableModel model;
@@ -53,12 +60,16 @@ public class Users extends JPanel {
 	private AddUser adduser;
 	private EditUser edituser;
 	private int user_id;
+	public Users instanceUsers;
 	
 
-	public Users() {
+	public Users(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 600);
 		setLayout(new BorderLayout(0, 0));
+		
+		this.user_id = user_id;
+		instanceUsers = this;
 		
 		//--content1
 		JPanel content1 = new JPanel();
@@ -71,15 +82,15 @@ public class Users extends JPanel {
 		content1_east.setBackground(new Color(255, 255, 255));
 		content1.add(content1_east, BorderLayout.EAST);
 		content1_east.setLayout(null);
-		content1_east.setPreferredSize(new Dimension(200, 100));
+		content1_east.setPreferredSize(new Dimension(300, 100));
 		
-		JButton addButton = new JButton("+Thêm");
+		addButton = new JButton("+Thêm");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				createNewAddUser();
 			}
 		});
-		addButton.setBounds(80, 48, 85, 23);
+		addButton.setBounds(175, 48, 85, 23);
 		content1_east.add(addButton);
 		addButton.setForeground(Color.WHITE);
 		addButton.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -90,7 +101,7 @@ public class Users extends JPanel {
 		content1.add(content1_center, BorderLayout.CENTER);
 		content1_center.setLayout(null);
 		
-		JLabel users_heading = new JLabel("Người dùng");
+		users_heading = new JLabel("Người dùng");
 		users_heading.setFont(new Font("SansSerif", Font.BOLD, 24));
 		users_heading.setBounds(27, 10, 305, 40);
 		content1_center.add(users_heading);
@@ -100,11 +111,11 @@ public class Users extends JPanel {
 		search_by.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		search_by.setBorder(null);
 		search_by.setBackground(Color.WHITE);
-		search_by.setBounds(27, 48, 89, 25);
+		search_by.setBounds(273, 48, 122, 25);
 		content1_center.add(search_by);
 		
 		search_user = new CustomJTextField("Tìm kiếm người dùng");
-		search_user.setBounds(122, 47, 237, 27);
+		search_user.setBounds(27, 47, 237, 27);
 		content1_center.add(search_user);
 		search_user.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
@@ -171,17 +182,19 @@ public class Users extends JPanel {
 		
 		//custom column
 		customColumnN(0,10);
-		customColumnN(4,20);
-		customColumnN(5,20);
-		
+		customColumnN(3,30);
+		customColumnN(4,15);
+		customColumnN(5,15);
+
 		//create scrollpane
-		CustomScrollPane scrollPane = new CustomScrollPane();
+		scrollPane = new CustomScrollPane();
 		content2.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(users_list);
 		
 		//sort table by column
 		sort();
 	}
+	
 	
 	//custom column by index
 	public void customColumnN(int index, int w) {
@@ -208,7 +221,7 @@ public class Users extends JPanel {
 				createdat = rs.getDate("created_at");
 				updatedat = rs.getDate("updated_at");
 				
-				Object[] objects= {id, name, email, role, createdat, updatedat, null};
+				Object[] objects= {id, name, email, role, createdat, updatedat};
 				model = (DefaultTableModel)users_list.getModel();
 				model.addRow(objects);
 			}
@@ -269,6 +282,12 @@ public class Users extends JPanel {
 		model.setRowCount(0);
 	}
 	
+	//reset table
+	public void resetTable() {
+		clearTable();
+		setUsersToTable();
+	}
+	
 	//create new panel adduser
 	public void createNewAddUser() {
 		adduser = new AddUser();
@@ -307,11 +326,6 @@ public class Users extends JPanel {
                 System.out.println("Bad regex pattern");
             }
         }
-		
 	}
-	
-	public void setId(int id) {
-		user_id = id;
-	}
-	
+
 }

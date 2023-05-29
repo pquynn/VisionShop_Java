@@ -8,7 +8,6 @@ import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
 import components.CustomTable.MultiButtonTable;
 import components.CustomTable.TableEvent;
-import view.user.OrderDetail;
 
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
@@ -33,6 +32,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Orders extends JPanel {
 
@@ -42,12 +44,17 @@ public class Orders extends JPanel {
 	private DefaultTableModel model;
 	private TableEvent event;
 	
-	private OrderDetail orderDetail;
+	private EditOrder editOrder;
+	private AddOrder addOrder;
+	
+	public Orders instanceOrders;
 	
 	public Orders() {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 600);
 		setLayout(new BorderLayout(0, 0));
+		
+		instanceOrders = this;
 		
 		JPanel content1 = new JPanel();
 		content1.setBackground(new Color(255, 255, 255));
@@ -60,6 +67,18 @@ public class Orders extends JPanel {
 		content1.add(content1_east, BorderLayout.EAST);
 		content1_east.setLayout(null);
 		content1_east.setPreferredSize(new Dimension(200, 100));
+		
+		JButton addButton = new JButton("+Thêm");
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				createAddOrder();
+			}
+		});
+		addButton.setForeground(Color.WHITE);
+		addButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+		addButton.setBackground(Color.BLACK);
+		addButton.setBounds(80, 48, 85, 23);
+		content1_east.add(addButton);
 		
 		JPanel content1_center = new JPanel();
 		content1_center.setBackground(new Color(255, 255, 255));
@@ -76,11 +95,11 @@ public class Orders extends JPanel {
 		search_by.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		search_by.setBorder(null);
 		search_by.setBackground(Color.WHITE);
-		search_by.setBounds(27, 48, 89, 25);
+		search_by.setBounds(272, 49, 122, 25);
 		content1_center.add(search_by);
 		
 		search_order = new CustomJTextField("Tìm kiếm đơn hàng");
-		search_order.setBounds(122, 47, 237, 27);
+		search_order.setBounds(27, 48, 237, 27);
 		content1_center.add(search_order);
 		search_order.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
@@ -98,7 +117,7 @@ public class Orders extends JPanel {
 				}
 			}
 		});
-		
+
 		search_order.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				String query = search_order.getText().toLowerCase();
@@ -150,7 +169,7 @@ public class Orders extends JPanel {
 		customColumnN(1,10);
 		customColumnN(3,20);
 		customColumnN(4,15);
-		customColumnN(5,20);
+		customColumnN(5,30);
 		customColumnN(6,20);
 		customColumnN(7,20);
 		
@@ -173,18 +192,19 @@ public class Orders extends JPanel {
 			
 		}
 		
-	
+	//set orders to table
 	public void setOrdersToTable() {
-	int order_id, user_id;
-	String user_name, phone, order_state;
-	int total_money;
-	Date createdat, updatedat;
-	
+		 int order_id, user_id;
+		 String user_name, phone, order_state;
+		 int total_money;
+		 Date createdat, updatedat;
+		
+		
 		try {
 			Connection conn = OracleConn.getConnection();
 			java.sql.Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery
-				("select * from \"User\", \"Order\"where \"User\".user_id = \"Order\".user_id order by order_id");
+				("select * from \"Order\" where \"order_state\" <> 'Chưa xác nhận' order by order_id");
 			
 			while(rs.next()) {
 				user_id = rs.getInt("user_id");
@@ -205,104 +225,115 @@ public class Orders extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	//create new order detail panel--------------------------------------
-	public void createNewOrderDetail() {
-		//orderDetail = new OrderDetail();
-		
-		
-		//create new order detail panel--------------------------------------
+	
+	//create new order detail panel
+	public void createEditOrder(int id) {
+		editOrder = new EditOrder(id);
+		editOrder.setOrdersPanel(this);
+		editOrder.setVisible(true);
+	}
+	//create new form add order
+	public void createAddOrder() {
+		addOrder = new AddOrder();
+		addOrder.setOrdersPanel(this);
+		addOrder.setVisible(true);
 	}
 	
-	//clear table
-	public void clearTable() {
+	//reset table
+	public void resetTable() {
 		model = (DefaultTableModel) orders_list.getModel();
 		model.setRowCount(0);
+		setOrdersToTable();
 	}
+	
 	//sort by
 	public void sort() {
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
 		orders_list.setRowSorter(sorter);
 	}
+	
 	//search by column in table
-		public void searchby(String query, int searchColIndex) {
-			TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
-			orders_list.setRowSorter(tr);
-			
-			if (query.length() == 0) {
-	            tr.setRowFilter(null);
-	        } else {
-	            try {
-	                tr.setRowFilter(RowFilter.regexFilter("^(?i)" + query, searchColIndex));
-	            } catch (PatternSyntaxException pse) {
-	                System.out.println("Bad regex pattern");
-	            }
-	        }
-			
-		}
+	public void searchby(String query, int searchColIndex) {
+		TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
+		orders_list.setRowSorter(tr);
 		
-		// set event to Action column(edit, delete)
-		public void setActionColumnEvent() {
-			model = (DefaultTableModel) orders_list.getModel();
-			event = new TableEvent() {
-			
-			public void onEdit(int row) {
-					int id = (int)model.getValueAt(orders_list.getSelectedRow(), 0);
-					//createEditUser(id);
-					
-			}
-			
-			public void onDelete(int row) {
-				int ret = JOptionPane.showConfirmDialog(null, "Xác nhận xóa đơn hàng", "Xóa", JOptionPane.YES_NO_OPTION);
-				if (ret == JOptionPane.YES_OPTION){
-					if (orders_list.isEditing()) {
-						orders_list.getCellEditor().stopCellEditing();
-		                }
-					  
-					  int id = (int)model.getValueAt(orders_list.getSelectedRow(), 0);
-					  String state = (String)model.getValueAt(orders_list.getSelectedRow(), 5);
-					  
-					  if(checkValidateOrder(state)) {
-						  deleteOrderById(id);
-						  model.removeRow(orders_list.getSelectedRow());
-					  }
-				}
-			}
-		};
-		}
+		if (query.length() == 0) {
+            tr.setRowFilter(null);
+        } else {
+            try {
+                tr.setRowFilter(RowFilter.regexFilter("^(?i)" + query, searchColIndex));
+            } catch (PatternSyntaxException pse) {
+                System.out.println("Bad regex pattern");
+            }
+        }
 		
-		//check validate delete order
-		public boolean checkValidateOrder(String state) {
-			boolean isValid = true;
-			
-			//neu trang thai don hang dang la cho giao, dang giao thì ko cho xoa
-			if(state.equals("Chờ giao")) {
-				JOptionPane.showMessageDialog(this, "Không thể xóa đơn hàng khi chờ giao");
-				isValid = false;
-			}
-			if(state.equals("Đang giao")) {
-				JOptionPane.showMessageDialog(this, "Không thể xóa đơn hàng khi đang giao");
-				isValid = false;
-			}
-			
-			return isValid;
-		}
+	}
 		
-		//delete user
-		public void deleteOrderById(int id) {
-			try {
-				Connection conn = OracleConn.getConnection();
-				String sql = "delete from \"Order\" where order_id = ?";
-				PreparedStatement pst = conn.prepareStatement(sql);
-				pst.setInt(1, id);
+	// set event to Action column(edit, delete)
+	public void setActionColumnEvent() {
+		model = (DefaultTableModel) orders_list.getModel();
+		event = new TableEvent() {
+		
+		public void onEdit(int row) {
+				int id = (int)model.getValueAt(orders_list.getSelectedRow(), 0);
+				createEditOrder(id);
 				
-				int rowcount = pst.executeUpdate();
-				if(rowcount > 0) 
-					JOptionPane.showMessageDialog(this, "Xóa đơn hàng thành công");
-				else 
-					JOptionPane.showMessageDialog(this, "Xóa đơn hàng không thành công");
-					
-			} catch (Exception e) {
-				e.printStackTrace();
+		}
+		
+		public void onDelete(int row) {
+			int ret = JOptionPane.showConfirmDialog(null, "Xác nhận xóa đơn hàng", "Xóa", JOptionPane.YES_NO_OPTION);
+			if (ret == JOptionPane.YES_OPTION){
+				if (orders_list.isEditing()) {
+					orders_list.getCellEditor().stopCellEditing();
+	                }
+				  
+				  int id = (int)model.getValueAt(orders_list.getSelectedRow(), 0);
+				  String state = (String)model.getValueAt(orders_list.getSelectedRow(), 5);
+				  
+				  if(checkValidateOrder(state)) {
+					  deleteOrderById(id);
+					  model.removeRow(orders_list.getSelectedRow());
+				  }
 			}
 		}
+	};
+	}
+	
+	//check validate delete order
+	public boolean checkValidateOrder(String state) {
+		boolean isValid = true;
+		
+		//neu trang thai don hang dang la cho giao, dang giao thì ko cho xoa
+		if(state.equals("Chờ giao hàng")) {
+			JOptionPane.showMessageDialog(this, "Không thể xóa đơn hàng ở trạng thái chờ giao hàng");
+			isValid = false;
+		}
+		if(state.equals("Đang giao hàng")) {
+			JOptionPane.showMessageDialog(this, "Không thể xóa đơn hàng ở trạng thái đang giao hàng");
+			isValid = false;
+		}
+		
+		return isValid;
+	}
+
+	//delete user
+	public void deleteOrderById(int id) {
+		try {
+			Connection conn = OracleConn.getConnection();
+			String sql = "delete from \"Order\" where order_id = ? and \"order_state\" = 'Đã thanh toán'"; /////////////kiem tra order_state --> lay trang thai tu table
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setInt(1, id);
+			
+			int rowcount = pst.executeUpdate();
+			if(rowcount > 0) 
+				JOptionPane.showMessageDialog(this, "Xóa đơn hàng thành công");
+			else 
+				JOptionPane.showMessageDialog(this, "Không thể xóa vì đơn hàng chưa hoàn thành");
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 }

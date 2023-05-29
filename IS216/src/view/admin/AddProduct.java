@@ -62,6 +62,8 @@ public class AddProduct extends JFrame {
 	private JLabel image_error;
 	
 	private Products product;
+	private Statistics statistics;
+	
 	private String tname, tprice, tquantity, tdescription, tshape, tcolor, tmaterial, tcategory;
 	private JFileChooser file;
 	private File selectedFile;
@@ -395,7 +397,7 @@ public class AddProduct extends JFrame {
 			}
 		});
 		image.setBackground(new Color(192, 192, 192));
-		image.setBounds(110, 185, 252, 225);
+		image.setBounds(90, 191, 290, 225);
 		contentPane.add(image);
 		
 		name_error = new JLabel();

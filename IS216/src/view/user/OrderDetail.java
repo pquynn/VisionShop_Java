@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import Connect.OracleConn;
 import view.user.MyOrder;
 
 import java.awt.BorderLayout;
@@ -14,14 +15,23 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+
 import java.awt.Dimension;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 
 public class OrderDetail extends JFrame {
@@ -33,19 +43,18 @@ public class OrderDetail extends JFrame {
 	private JLabel txtemail;
 	private JLabel txtcreatedat;
 	private JLabel txttotal_money;
-	private JLabel txtshippingfee;
+	private JLabel txt_totalglasses;
 	private JLabel txtaddress;
-	private JLabel order_id;
-	private JButton btCancel;
+	private JLabel txtstate;
 	
-	private MyOrder myOrder;
-	private int id;
+	private DefaultTableModel model;
+	private int order_id;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					OrderDetail frame = new OrderDetail();
+					OrderDetail frame = new OrderDetail(1);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -55,9 +64,11 @@ public class OrderDetail extends JFrame {
 	}
 
 	
-	public OrderDetail() {
+	public OrderDetail(int order_id) {
+		this.order_id = order_id;
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(440, 180, 880, 550);
+		setBounds(440, 175, 880, 550);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(255, 255, 255));
 		contentPane.setBorder(null);
@@ -118,63 +129,63 @@ public class OrderDetail extends JFrame {
 		txtcreatedat.setHorizontalAlignment(SwingConstants.LEFT);
 		txtcreatedat.setForeground(Color.BLACK);
 		txtcreatedat.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtcreatedat.setBounds(533, 51, 119, 32);
+		txtcreatedat.setBounds(533, 51, 158, 32);
 		north.add(txtcreatedat);
 		
-		 txtshippingfee = new JLabel("abc");
-		txtshippingfee.setHorizontalAlignment(SwingConstants.LEFT);
-		txtshippingfee.setForeground(Color.BLACK);
-		txtshippingfee.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtshippingfee.setBounds(556, 77, 119, 32);
-		north.add(txtshippingfee);
+		 txt_totalglasses = new JLabel("abc");
+		txt_totalglasses.setHorizontalAlignment(SwingConstants.LEFT);
+		txt_totalglasses.setForeground(Color.BLACK);
+		txt_totalglasses.setFont(new Font("SansSerif", Font.BOLD, 14));
+		txt_totalglasses.setBounds(588, 77, 156, 32);
+		north.add(txt_totalglasses);
 		
 		 txtphone = new JLabel("0123456789");
 		txtphone.setHorizontalAlignment(SwingConstants.LEFT);
 		txtphone.setForeground(Color.BLACK);
 		txtphone.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtphone.setBounds(186, 77, 119, 32);
+		txtphone.setBounds(186, 77, 217, 32);
 		north.add(txtphone);
 		
 		 txttotal_money = new JLabel("abc");
 		txttotal_money.setHorizontalAlignment(SwingConstants.LEFT);
 		txttotal_money.setForeground(Color.BLACK);
 		txttotal_money.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txttotal_money.setBounds(572, 105, 119, 32);
+		txttotal_money.setBounds(572, 105, 172, 32);
 		north.add(txttotal_money);
 		
 		txtname = new JLabel("abc");
 		txtname.setHorizontalAlignment(SwingConstants.LEFT);
 		txtname.setForeground(Color.BLACK);
 		txtname.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtname.setBounds(245, 51, 119, 32);
+		txtname.setBounds(245, 51, 172, 32);
 		north.add(txtname);
 		
-		 order_id = new JLabel("Phí giao hàng:");
-		order_id.setHorizontalAlignment(SwingConstants.LEFT);
-		order_id.setForeground(Color.GRAY);
-		order_id.setFont(new Font("SansSerif", Font.PLAIN, 16));
-		order_id.setBounds(443, 76, 119, 32);
-		north.add(order_id);
+		JLabel total_glasses = new JLabel("Tổng số mắt kính:");
+		total_glasses.setHorizontalAlignment(SwingConstants.LEFT);
+		total_glasses.setForeground(Color.GRAY);
+		total_glasses.setFont(new Font("SansSerif", Font.PLAIN, 16));
+		total_glasses.setBounds(443, 76, 135, 32);
+		north.add(total_glasses);
 		
 		 txtaddress = new JLabel("TP Ho Chi Minh");
 		txtaddress.setHorizontalAlignment(SwingConstants.LEFT);
 		txtaddress.setForeground(Color.BLACK);
 		txtaddress.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtaddress.setBounds(161, 134, 119, 32);
+		txtaddress.setBounds(161, 134, 272, 32);
 		north.add(txtaddress);
 		
-		JLabel shipping = new JLabel("Trạng thái đơn hàng:");
-		shipping.setHorizontalAlignment(SwingConstants.LEFT);
-		shipping.setForeground(Color.GRAY);
-		shipping.setFont(new Font("SansSerif", Font.PLAIN, 16));
-		shipping.setBounds(443, 133, 151, 32);
-		north.add(shipping);
+		JLabel orderstate = new JLabel("Trạng thái đơn hàng:");
+		orderstate.setHorizontalAlignment(SwingConstants.LEFT);
+		orderstate.setForeground(Color.GRAY);
+		orderstate.setFont(new Font("SansSerif", Font.PLAIN, 16));
+		orderstate.setBounds(443, 133, 151, 32);
+		north.add(orderstate);
 		
 		 txtemail = new JLabel("abc@gmail.com");
 		txtemail.setHorizontalAlignment(SwingConstants.LEFT);
 		txtemail.setForeground(Color.BLACK);
 		txtemail.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtemail.setBounds(151, 105, 119, 32);
+		txtemail.setBounds(151, 105, 266, 32);
 		north.add(txtemail);
 		
 		JLabel total_money = new JLabel("Trị giá đơn hàng:");
@@ -184,25 +195,26 @@ public class OrderDetail extends JFrame {
 		total_money.setBounds(443, 104, 127, 32);
 		north.add(total_money);
 		
-		JLabel state = new JLabel("Chờ giao");
-		state.setHorizontalAlignment(SwingConstants.LEFT);
-		state.setForeground(Color.BLACK);
-		state.setFont(new Font("SansSerif", Font.BOLD, 14));
-		state.setBounds(593, 133, 119, 32);
-		north.add(state);
-		
-		
-		
+		txtstate = new JLabel("Chờ giao");
+		txtstate.setHorizontalAlignment(SwingConstants.LEFT);
+		txtstate.setForeground(Color.BLACK);
+		txtstate.setFont(new Font("SansSerif", Font.BOLD, 14));
+		txtstate.setBounds(593, 133, 194, 32);
+		north.add(txtstate);
 		
 		JPanel south = new JPanel();
 		south.setBackground(new Color(255, 255, 255));
 		contentPane.add(south, BorderLayout.SOUTH);
-		south.setPreferredSize(new Dimension(100, 80));
+		south.setPreferredSize(new Dimension(100, 50));
 		south.setLayout(null);
 		
 		
-
+		//Product list table
 		product_list = new JTable();
+		product_list.setModel(new DefaultTableModel(
+				new Object[][] {},
+				new String[] {"Tên SP", "Số lượng", "Giá", "Thành tiền"}
+		));
 		product_list.setRowSelectionAllowed(false);
 		product_list.setShowVerticalLines(false);
 		product_list.setBorder(null);
@@ -210,32 +222,19 @@ public class OrderDetail extends JFrame {
 		product_list.setRowHeight(50);
 		product_list.setGridColor(new Color(211, 211, 211));
 		
-		
 		product_list.getTableHeader().setBackground(Color.WHITE);
 		product_list.getTableHeader().setForeground(Color.black);
 		product_list.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
 		product_list.getTableHeader().setPreferredSize(new Dimension(100, 30));
 		    
+		customColumnN(0, 100);
+		customColumnN(1, 20);
+		customColumnN(2, 20);
+		customColumnN(3, 20);
+		setOrderDetailToTable();
 		
-		//String space = "                                                             "; // chua xong, moi len y tuong ve khoang cach 
-		product_list.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-			},
-			new String[] {
-				"#", "T\u00EAn m\u1EAFt k\u00EDnh", "Ph\u00E2n lo\u1EA1i", "H\u00ECnh \u1EA3nh", "S\u1ED1 l\u01B0\u1EE3ng", "Gi\u00E1", "Th\u00E0nh ti\u1EC1n"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, false, false, true, false
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
-		//orders_list.getColumnModel().getColumn(0).setResizable(false);
-		//orders_list.getColumnModel().getColumn(0).setPreferredWidth(30);
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();	
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 		
 		setBackground(new Color(255, 255, 255));
 		product_list.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -251,51 +250,77 @@ public class OrderDetail extends JFrame {
 		contentPane.add(east, BorderLayout.EAST);
 		east.setPreferredSize(new Dimension(50, 100));
 		
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();	
-		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
-		
-		btCancel = new JButton("Hủy đơn");
-		btCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int ret = JOptionPane.showConfirmDialog(null, "Xác nhận Huỷ cập nhật", "Hủy", JOptionPane.YES_NO_OPTION);
-				if (ret == JOptionPane.YES_OPTION){
-					//kiem tra co cho huy dơn ko, chuyen trang thai huy don
-					//reset lai cac table co lien quan den don (order, myorder)
-					dispose();
-				}
-			}
-		});
-		btCancel.setForeground(Color.WHITE);
-		btCancel.setFont(new Font("SansSerif", Font.BOLD, 16));
-		btCancel.setBackground(Color.BLACK);
-		btCancel.setBounds(600, 22, 213, 32);
-		south.add(btCancel);
-		
+		//set order detail by id
+		setOrderDetailById();
 			
 	}
 		
-	public void setId(int id) {
-		this.id = id;
-	}
-		
-	public void setMyOrdersPanel(MyOrder myOrder) {
-		this.myOrder = myOrder;
-	}
-	
-	public void resetTable() {
-		//myOrder.clearTable();
-		//myOrder.setOrdersToTable();
-	}
-	
-	public void updateOrder() {
+	//custom column by index
+	public void customColumnN(int index, int w) {
+		DefaultTableCellRenderer center = new DefaultTableCellRenderer();	
+		center.setHorizontalAlignment( JLabel.CENTER );
+		product_list.getColumnModel().getColumn(index).setPreferredWidth(w);
+		product_list.getColumnModel().getColumn(index).setCellRenderer(center);
 		
 	}
 	
-	public void showOrderInfo() {
-		
+	//public void setOrdersPanel(Orders orders) {
+		//this.orders = orders;
+	//}
+	
+	public void setOrderDetailById() {
+		try {
+			Connection conn = OracleConn.getConnection();
+			String sql = "select * from \"Order\" where order_id = ?";
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setInt(1, order_id);
+			ResultSet rs = pst.executeQuery();
+			
+			while(rs.next()) {
+				txtname.setText(rs.getString("full_name"));
+				txtphone.setText(rs.getString("phone"));
+				txtemail.setText(rs.getString("email"));
+				txtaddress.setText(rs.getString("address"));
+				txtcreatedat.setText(String.valueOf(rs.getDate("created_at")));
+				txt_totalglasses.setText(String.valueOf(rs.getInt("total_glasses")));
+				txttotal_money.setText(String.valueOf(rs.getInt("total_money")));
+				txtstate.setText(rs.getString("\"order_state\""));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	public void setOrderDetailToTable() {
+	
+	//set order detail to table
+		public void setOrderDetailToTable() {
+			String glasses_name;
+			int quantity, price, into_money, glasses_id;
+			try {
+				Connection conn = OracleConn.getConnection();
+				String sql = "select * from Order_detail where order_id = ? ";
+				PreparedStatement pst = conn.prepareStatement(sql);
+				pst.setInt(1, order_id);
+				ResultSet rs = pst.executeQuery();
+				
+				while(rs.next()) {
+					quantity = rs.getInt("quantity");
+					price = rs.getInt("price");
+					into_money = rs.getInt("into_money");
+					glasses_name = rs.getString("glasses_name");
+			        
+					Object[] objects= {glasses_name, price, quantity, into_money};
+					model = (DefaultTableModel)product_list.getModel();
+					model.addRow(objects);
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
+	public JPanel getPanel() {
+		return contentPane;
 	}
 }
 
