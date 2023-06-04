@@ -610,7 +610,21 @@ public class AddOrder extends JFrame {
 	public void displayODToJTextField() {
 		int index = orderdetails_list.getSelectedRow();
 		if(index < model.getRowCount() && index >= 0) {
-			String string = model.getValueAt(index, 0).toString() + " | " + model.getValueAt(index, 1).toString();
+			String glasses_name = model.getValueAt(index, 0).toString();
+			try {
+				Connection conn = OracleConn.getConnection();
+				String sql1 = "select glasses_id from Glasses where glasses_name = ?";
+				PreparedStatement pst1 = conn.prepareStatement(sql1);
+				pst1.setString(1, glasses_name);
+				ResultSet rs = pst1.executeQuery();
+				if(rs.next()) {
+					glasses_id = rs.getInt(1);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			String string = String.valueOf(glasses_id) + " | " + glasses_name;
 			products_list.setSelectedItem(string);
 			price.setText(model.getValueAt(index, 1).toString());
 			quantity.setText(model.getValueAt(index, 2).toString());
@@ -650,8 +664,8 @@ public class AddOrder extends JFrame {
 					int index = orderdetails_list.getSelectedRow();
 					if(index < model.getRowCount() && index >= 0) {
 						int update_intomoney = Integer.parseInt(price.getText()) * Integer.parseInt(quantity.getText());
-						model.setValueAt(quantity.getText(), index, 3);
-						model.setValueAt(String.valueOf(update_intomoney), index, 4);
+						model.setValueAt(quantity.getText(), index, 2);
+						model.setValueAt(String.valueOf(update_intomoney), index, 3);
 					}
 					setTotalGlassesandPrice();
 				}

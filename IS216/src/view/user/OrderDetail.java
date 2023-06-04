@@ -157,7 +157,7 @@ public class OrderDetail extends JFrame {
 		txtname.setHorizontalAlignment(SwingConstants.LEFT);
 		txtname.setForeground(Color.BLACK);
 		txtname.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtname.setBounds(245, 51, 172, 32);
+		txtname.setBounds(235, 51, 209, 32);
 		north.add(txtname);
 		
 		JLabel total_glasses = new JLabel("Tổng số mắt kính:");

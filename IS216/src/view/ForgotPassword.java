@@ -52,7 +52,7 @@ public class ForgotPassword extends JFrame {
 	}
 	
 	public ForgotPassword() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setBounds(560, 250, 566, 358);
 		contentPane = new JPanel();

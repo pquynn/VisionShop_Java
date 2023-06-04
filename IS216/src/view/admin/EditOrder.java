@@ -155,7 +155,7 @@ public class EditOrder extends JFrame {
 		txtname.setHorizontalAlignment(SwingConstants.LEFT);
 		txtname.setForeground(Color.BLACK);
 		txtname.setFont(new Font("SansSerif", Font.BOLD, 14));
-		txtname.setBounds(245, 51, 172, 32);
+		txtname.setBounds(230, 51, 210, 32);
 		north.add(txtname);
 		
 		JLabel lb_totalglasses = new JLabel("Tổng số mắt kính:");

@@ -87,14 +87,14 @@ public class Statistics extends JPanel {
 		revenue_thismonth.setHorizontalAlignment(SwingConstants.CENTER);
 		revenue_thismonth.setForeground(new Color(0, 0, 0));
 		revenue_thismonth.setFont(new Font("SansSerif", Font.BOLD, 32));
-		revenue_thismonth.setBounds(0, 38, 200, 39);
+		revenue_thismonth.setBounds(0, 38, 190, 39);
 		revenue_pane.add(revenue_thismonth);
 		
 		comparision = new JLabel("Tăng 50000");
 		comparision.setHorizontalAlignment(SwingConstants.RIGHT);
 		comparision.setForeground(new Color(46, 139, 87));
 		comparision.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		comparision.setBounds(0, 75, 190, 23);
+		comparision.setBounds(0, 75, 193, 23);
 		revenue_pane.add(comparision);
 		
 		JLabel dvi = new JLabel("đ");
@@ -282,8 +282,8 @@ public class Statistics extends JPanel {
 	public void setMonthRevenue() {
 		try {
 			Connection con = OracleConn.getConnection();
-			String sql = "select sum(total_money) from \"Order\" where extract(year from created_at) = extract(year from sysdate)"
-					+ " and extract(month from created_at) = extract(month from sysdate) and \"order_state\" = 'Đã thanh toán'";
+			String sql = "select sum(total_money) from \"Order\" where extract(year from updated_at) = extract(year from sysdate)"
+					+ " and extract(month from updated_at) = extract(month from sysdate) and \"order_state\" = 'Đã thanh toán'";
 			Statement pst = con.createStatement();
 			ResultSet rs = pst.executeQuery(sql);
 			
@@ -301,8 +301,8 @@ public class Statistics extends JPanel {
 		try {
 			Connection con = OracleConn.getConnection();
 			String sql = "select sum(total_money) from \"Order\" where \"order_state\" = 'Đã thanh toán' and"
-					+ "((extract(year from created_at) = extract(year from sysdate) and extract(month from created_at) = extract(month from sysdate) - 1)"
-					+ "or (extract(year from created_at) = extract(year from sysdate) - 1 and extract(month from created_at)=12 and extract(month from sysdate)=1))";
+					+ "((extract(year from updated_at) = extract(year from sysdate) and extract(month from updated_at) = extract(month from sysdate) - 1)"
+					+ "or (extract(year from updated_at) = extract(year from sysdate) - 1 and extract(month from updated_at)=12 and extract(month from sysdate)=1))";
 			Statement pst = con.createStatement();
 			ResultSet rs = pst.executeQuery(sql);
 			
@@ -474,10 +474,10 @@ public class Statistics extends JPanel {
 		int[] revenue = new int[12];
 		try {
 			Connection con = OracleConn.getConnection();
-			String sql = "select sum(total_money), extract(month from created_at) from \"Order\" "
-					+ "where extract(year from created_at) = extract(year from sysdate) "
+			String sql = "select sum(total_money), extract(month from updated_at) from \"Order\" "
+					+ "where extract(year from updated_at) = extract(year from sysdate) "
 					+ "and \"order_state\" = 'Đã thanh toán'"
-					+ "group by extract(month from created_at) order by extract(month from created_at)"; 
+					+ "group by extract(month from updated_at) order by extract(month from updated_at)"; 
 			Statement pst = con.createStatement();
 			ResultSet rs = pst.executeQuery(sql);
 			int i = 0; 

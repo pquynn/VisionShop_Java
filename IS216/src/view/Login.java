@@ -32,7 +32,6 @@ import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.jar.Attributes.Name;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 

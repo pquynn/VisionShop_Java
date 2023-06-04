@@ -168,17 +168,15 @@ public class MyOrder extends JPanel{
 		customColumnN(1, 10);
 		customColumnN(3, 20);
 		customColumnN(4, 10);
-		customColumnN(5, 20);
-		customColumnN(6, 30);
-		customColumnN(7, 20);
-		customColumnN(8, 20);
+		customColumnN(5, 10);
+		customColumnN(6, 25);
+		customColumnN(7, 15);
+		customColumnN(8, 15);
 		
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();	
 		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 		scrollPane.setViewportView(orders_list);
 		
-		//sort table by column
-		sort();
 		
 	}
 			
@@ -232,10 +230,13 @@ public class MyOrder extends JPanel{
 		model = (DefaultTableModel) orders_list.getModel();
 		model.setRowCount(0);
 		setOrdersToTable();
+		//sort table by column
+		sort();
 	}
 	
 	//sort by
 	public void sort() {
+		model = (DefaultTableModel) orders_list.getModel();
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
 		orders_list.setRowSorter(sorter);
 	}

@@ -13,8 +13,8 @@ public class JavaMail {
 	private String to;
 	private String subject;
 	private String msg;
-	private final String from = "ptrinh931@gmail.com";
-	private final String password = "qoubneyjfmznrhpm";
+	private final String from = "pquyen245@gmail.com";
+	private final String password = "ghtzcgjlbtgmfedo";
 	
 	public JavaMail(String to, String subject, String msg) {
 		this.to = to;
