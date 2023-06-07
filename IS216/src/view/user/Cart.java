@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
 import components.ProductPanels.ProductInCart;
-import components.ProductPanels.ProductThumbnail;
 
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
@@ -20,41 +19,17 @@ import Connect.OracleConn;
 import Email.JavaMail;
 
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class Cart extends JPanel {
-	private CustomJTextField name;
-	private CustomJTextField email;
-	private CustomJTextField address;
-	private CustomJTextField phone;
-	
-	private JLabel quanty;
-	private JLabel total_money;
-	private JLabel name_error;
-	private JLabel address_error;
-	private JLabel phone_error;
-	private JLabel email_error;
-	
-	private CustomScrollPane scrollPane;
-	
-	private JPanel list_pane;
-	public Cart instanceCart;
-	private int user_id, order_id;
-	private ArrayList<Object[]> products_list;
-	
-	
-
 	public Cart(int user_id) {
 		setBackground(new Color(255, 255, 255));
 		setSize(1000, 650);
@@ -91,14 +66,11 @@ public class Cart extends JPanel {
 		mycart.add(mycart_south, BorderLayout.SOUTH);
 		mycart_south.setPreferredSize(new Dimension(100, 40));
 		
-	
-		 scrollPane = new CustomScrollPane();
+		scrollPane = new CustomScrollPane();
 		mycart.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setBorder(null);
 
-	
 		//--------------------------------
-		
 		JPanel checkout = new JPanel();
 		checkout.setBackground(new Color(255, 255, 255));
 		add(checkout, BorderLayout.EAST);
@@ -224,20 +196,20 @@ public class Cart extends JPanel {
 		currency.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		currency.setBounds(277, 248, 17, 19);
 		checkout_center.add(currency);
-		
-		
+	
 		//------------------------------
 		setOrderDetailToCart();
 		
 		//set user detail to checkout pane
 		setUserDetail();
 	}
+	
+	// create empty panel
 	public JPanel createEmptyJPanel() {
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.white);
 		return panel;
 	}
-	
 	
 	//set user information to text field
 	public void setUserDetail() {
@@ -259,6 +231,7 @@ public class Cart extends JPanel {
 		}
 	}
 	
+	// set total glasses and total price label
 	public void setTotalGlassesandPrice() {
 		try {
 			Connection conn = OracleConn.getConnection();
@@ -277,7 +250,6 @@ public class Cart extends JPanel {
 		}
 	}
 	
-
 	//find order_id by user_id and order_state = 'chua xac nhan'
 	public void findOrderID() {
 		try {
@@ -327,8 +299,7 @@ public class Cart extends JPanel {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-			return products_list;
+		return products_list;
 	}
 		
 		
@@ -352,7 +323,6 @@ public class Cart extends JPanel {
 			setTotalGlassesandPrice();
 			for(int i = 0; i < 4 - products_list.size(); i++)
 				list_pane.add(createEmptyJPanel());
-				
 		}
 	}
 	
@@ -381,7 +351,6 @@ public class Cart extends JPanel {
 		//KIEM TRA SP HET HANG CHUA, CON TON TAI KO?, CO VUOT QUA SL TON KHO KO
 		check = validateOrderDetails();
 				
-		
 		//---KIEM TRA DINH DANG THONG TIN
 		//full name
 		if (full_name.equals("")) {
@@ -448,7 +417,6 @@ public class Cart extends JPanel {
 		return isValid;
 	}
 	
-	
 	//clear error message
 	public void clearmessage() {
 		name_error.setText("");
@@ -457,7 +425,7 @@ public class Cart extends JPanel {
 		email_error.setText("");
 	}
 	
-	//update order - save order---------------------------------
+	//update order - save order
 	public void updateOrder() { 
 		try {
 			Connection conn = OracleConn.getConnection();
@@ -481,15 +449,27 @@ public class Cart extends JPanel {
 				//gui email
 				String to = email.getText();
 				String subject = "[Vision] THÔNG TIN HÓA ĐƠN";
-				String msg = "Tên khách hàng: "+name.getText()
+				//lay thong tin Hoa don
+				String msg_order = "Tên khách hàng: "+name.getText()
 						+"\nĐịa chỉ: "+address.getText()
 						+"\nĐiện thoại: "+phone.getText()
 						+"\nTổng số mắt kính đã mua: "+quanty.getText()
 						+"\nTổng trị giá đơn hàng: "+total_money.getText();
-						//duoc thi them chi tiet don hang vao lun
-				JavaMail mail = new JavaMail(to, subject, msg);
+				
+				//lay thong tin CTHD
+				products_list = getProductsList();
+				String msg_detail = "\n\n---CHI TIẾT ĐƠN HÀNG---";
+				if(products_list.isEmpty() == false) {
+					for(Object[] i : products_list) 
+						msg_detail += "\n Tên mắt kính: " + String.valueOf(i[1]) + " - SL: " + String.valueOf(i[3]) + " - Giá: " + String.valueOf(i[2]);
+				}
+				
+				JavaMail mail = new JavaMail(to, subject, msg_order + msg_detail);
 				mail.sendEmail();
 				JOptionPane.showMessageDialog(this, "Thông tin đơn hàng đã được gửi qua email.");
+				
+				// lam trong gio hang
+				order_id = 0;
 				emptyCart();
 				quanty.setText("0");
 				total_money.setText("0");
@@ -501,4 +481,20 @@ public class Cart extends JPanel {
 			e.printStackTrace();
 		}
 	}
+
+	private CustomJTextField name;
+	private CustomJTextField email;
+	private CustomJTextField address;
+	private CustomJTextField phone;
+	private JLabel quanty;
+	private JLabel total_money;
+	private JLabel name_error;
+	private JLabel address_error;
+	private JLabel phone_error;
+	private JLabel email_error;
+	private CustomScrollPane scrollPane;
+	private JPanel list_pane;
+	public Cart instanceCart;
+	private int user_id, order_id;
+	private ArrayList<Object[]> products_list;
 }

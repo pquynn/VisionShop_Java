@@ -25,27 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class HomePage extends JFrame {
-	private Login login;
-	private JPanel contentPane;
-	private JPanel navbar;
-	private JPanel navbar_footer;
-	private JPanel navbar_header;
-	
-	private JButton home;
-	private JButton cart;
-	private JButton myorder;
-	private JButton admin;
-	private JButton account;
-	private JButton logout;
-	
-	private Home homePanel;
-	private Cart cartPanel;
-	private MyOrder myorderPanel;
-	private Admin adminPanel;
-	private Account accountPanel;
-	private int user_id;
-
-	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -59,7 +38,6 @@ public class HomePage extends JFrame {
 		});
 	}
 
-	
 	public HomePage(int user_id) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(300, 100, 1040, 640);
@@ -82,7 +60,6 @@ public class HomePage extends JFrame {
 		accountPanel = new Account(this.user_id).instanceAccount;
 		adminPanel = new Admin(this.user_id).instanceAdmin;
 
-		
 		//-----------navbar
 		navbar = new JPanel();
 		contentPane.add(navbar, BorderLayout.WEST);
@@ -244,7 +221,6 @@ public class HomePage extends JFrame {
 			}
 		});
 		
-		
 		//--cart
 		cart = new JButton("     Giỏ hàng");
 		cart.setHorizontalAlignment(SwingConstants.LEFT);
@@ -294,7 +270,6 @@ public class HomePage extends JFrame {
 			}
 		});
 		
-		
 		//--myorder
 		myorder = new JButton("     Đơn hàng");
 		myorder.setHorizontalAlignment(SwingConstants.LEFT);
@@ -328,7 +303,6 @@ public class HomePage extends JFrame {
 				myorderPanel.resetTable();
 			}
 		});
-		
 		myorder.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
 				if(myorder.getBackground().equals(new Color(150,148,148)) == false) {
@@ -342,7 +316,6 @@ public class HomePage extends JFrame {
 				}
 			}
 		});
-		
 		
 		//--admin
 		admin = new JButton("     Quản trị");
@@ -373,8 +346,6 @@ public class HomePage extends JFrame {
 				accountPanel.setVisible(false);
 				myorderPanel.setVisible(false);
 				adminPanel.setVisible(true);
-				
-				////////////////////////////////HAM PHAN QUYEN 
 			}
 		});
 		
@@ -395,6 +366,7 @@ public class HomePage extends JFrame {
 		setUIByRole();
 	}
 	
+	// set login screen
 	public void setLogin(Login lg) {
 		login = lg;
 	}
@@ -421,7 +393,24 @@ public class HomePage extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		return check;
 	}
+
+	private Login login;
+	private JPanel contentPane;
+	private JPanel navbar;
+	private JPanel navbar_footer;
+	private JPanel navbar_header;
+	private JButton home;
+	private JButton cart;
+	private JButton myorder;
+	private JButton admin;
+	private JButton account;
+	private JButton logout;
+	private Home homePanel;
+	private Cart cartPanel;
+	private MyOrder myorderPanel;
+	private Admin adminPanel;
+	private Account accountPanel;
+	private int user_id;
 }

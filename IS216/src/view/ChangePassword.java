@@ -3,11 +3,6 @@ package view;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -16,15 +11,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import Connect.OracleConn;
-import components.CustomJTextField;
 import view.user.Account;
 
 import java.awt.event.ActionListener;
@@ -242,7 +234,6 @@ public class ChangePassword extends JFrame {
 		
 	}
 	
-	
 	//save change
 	public void updatePassword() {
 		String newpw = new_password.getText();
@@ -306,7 +297,6 @@ public class ChangePassword extends JFrame {
 		return isValid;
 	}
 	
-	
 	//clear validation message
 	public void clearMessage() {
 		old_pw_error.setText("");
@@ -318,7 +308,6 @@ public class ChangePassword extends JFrame {
 	public void setAccountPanel(Account account) {
 		this.account = account;
 	}
-	
 }
 
 

@@ -1,7 +1,6 @@
 package view.admin;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 
@@ -10,22 +9,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
-import components.CustomTable.ActionEditer;
-import components.CustomTable.ActionPanel;
-import components.CustomTable.ActionRenderer;
 import components.CustomTable.MultiButtonTable;
 import components.CustomTable.TableEvent;
 
@@ -38,13 +25,10 @@ import Connect.OracleConn;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.regex.PatternSyntaxException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -52,10 +36,6 @@ import java.awt.event.KeyEvent;
 public class ProductCategory extends JPanel {
 	private CustomJTextField add_category;
 	private MultiButtonTable categories_list;
-
-	private JButton edit;
-	private JButton delete;
-	private JPanel actionPane;
 	private JLabel name_error;
 	private DefaultTableModel model;
 	private TableEvent event;
@@ -120,6 +100,11 @@ public class ProductCategory extends JPanel {
 		
 		
 		JButton addButtion = new JButton("+Thêm");
+		addButtion.setForeground(Color.WHITE);
+		addButtion.setFont(new Font("SansSerif", Font.BOLD, 14));
+		addButtion.setBackground(Color.BLACK);
+		addButtion.setBounds(300, 54, 85, 23);
+		content1.add(addButtion);
 		addButtion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				name_error.setText("");
@@ -129,11 +114,6 @@ public class ProductCategory extends JPanel {
 				}
 			}
 		});
-		addButtion.setForeground(Color.WHITE);
-		addButtion.setFont(new Font("SansSerif", Font.BOLD, 14));
-		addButtion.setBackground(Color.BLACK);
-		addButtion.setBounds(300, 54, 85, 23);
-		content1.add(addButtion);
 		
 		name_error = new JLabel();
 		name_error.setForeground(Color.RED);
@@ -166,7 +146,6 @@ public class ProductCategory extends JPanel {
 		
 		//----------------------------------
 		//Table
-		
 		categories_list = new MultiButtonTable();
 		categories_list.setModel(new DefaultTableModel(
 				new Object[][] {},
@@ -338,7 +317,6 @@ public class ProductCategory extends JPanel {
 		editcategory.setCategoryByID();
 		editcategory.setVisible(true);
 	}
-	
 	
 	//sort table
 	public void sort() {

@@ -7,63 +7,23 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import Connect.OracleConn;
-import view.user.MyOrder;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import java.awt.Font;
-import java.awt.Image;
 
 import javax.swing.SwingConstants;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 
 import java.awt.Dimension;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
-import java.awt.event.ActionListener;
-import java.sql.Clob;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.awt.event.ActionEvent;
 
 public class OrderDetail extends JFrame {
-
-	private JPanel contentPane;
-	private JTable product_list;
-	private JLabel txtname;
-	private JLabel txtphone;
-	private JLabel txtemail;
-	private JLabel txtcreatedat;
-	private JLabel txttotal_money;
-	private JLabel txt_totalglasses;
-	private JLabel txtaddress;
-	private JLabel txtstate;
-	
-	private DefaultTableModel model;
-	private int order_id;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					OrderDetail frame = new OrderDetail(1);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	
 	public OrderDetail(int order_id) {
 		this.order_id = order_id;
 		
@@ -264,10 +224,6 @@ public class OrderDetail extends JFrame {
 		
 	}
 	
-	//public void setOrdersPanel(Orders orders) {
-		//this.orders = orders;
-	//}
-	
 	public void setOrderDetailById() {
 		try {
 			Connection conn = OracleConn.getConnection();
@@ -309,7 +265,7 @@ public class OrderDetail extends JFrame {
 					into_money = rs.getInt("into_money");
 					glasses_name = rs.getString("glasses_name");
 			        
-					Object[] objects= {glasses_name, price, quantity, into_money};
+					Object[] objects= {glasses_name, quantity, price, into_money};
 					model = (DefaultTableModel)product_list.getModel();
 					model.addRow(objects);
 				}
@@ -318,10 +274,24 @@ public class OrderDetail extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		
+	
+	// method to get panel
 	public JPanel getPanel() {
 		return contentPane;
 	}
+
+	private JPanel contentPane;
+	private JTable product_list;
+	private JLabel txtname;
+	private JLabel txtphone;
+	private JLabel txtemail;
+	private JLabel txtcreatedat;
+	private JLabel txttotal_money;
+	private JLabel txt_totalglasses;
+	private JLabel txtaddress;
+	private JLabel txtstate;
+	private DefaultTableModel model;
+	private int order_id;
 }
 
 				

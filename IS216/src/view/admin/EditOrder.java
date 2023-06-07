@@ -30,38 +30,6 @@ import java.awt.event.ActionEvent;
 
 public class EditOrder extends JFrame {
 
-	private JPanel contentPane;
-	private JTable product_list;
-	private JLabel txtname;
-	private JLabel txtphone;
-	private JLabel txtemail;
-	private JLabel txtcreatedat;
-	private JLabel txttotal_money;
-	private JLabel txt_totalglasses;
-	private JLabel txtaddress;
-	private JLabel txtstate;
-	private JButton btPayment;
-	private JButton btDelivery;
-	private JButton btPrint;
-	
-	private DefaultTableModel model;
-	private Orders orders;
-	private int order_id;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					EditOrderDetail frame = new EditOrderDetail(1);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	
 	public EditOrder(int order_id) {
 		this.order_id = order_id;
 		
@@ -205,7 +173,6 @@ public class EditOrder extends JFrame {
 		contentPane.add(south, BorderLayout.SOUTH);
 		south.setPreferredSize(new Dimension(100, 80));
 		south.setLayout(null);
-		
 		
 		//Product list table
 		product_list = new JTable();
@@ -352,7 +319,7 @@ public class EditOrder extends JFrame {
 				into_money = rs.getInt("into_money");
 				glasses_name = rs.getString("glasses_name");
 		        
-				Object[] objects= {glasses_name, price, quantity, into_money};
+				Object[] objects= {glasses_name, quantity, price, into_money};
 				model = (DefaultTableModel)product_list.getModel();
 				model.addRow(objects);
 			}
@@ -418,6 +385,23 @@ public class EditOrder extends JFrame {
 			btPayment.setVisible(false);
 		}
 	}
+
+	private JPanel contentPane;
+	private JTable product_list;
+	private JLabel txtname;
+	private JLabel txtphone;
+	private JLabel txtemail;
+	private JLabel txtcreatedat;
+	private JLabel txttotal_money;
+	private JLabel txt_totalglasses;
+	private JLabel txtaddress;
+	private JLabel txtstate;
+	private JButton btPayment;
+	private JButton btDelivery;
+	private JButton btPrint;
+	private DefaultTableModel model;
+	private Orders orders;
+	private int order_id;
 }
 
 				

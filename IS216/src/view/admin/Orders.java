@@ -43,10 +43,8 @@ public class Orders extends JPanel {
 	private JComboBox search_by;
 	private DefaultTableModel model;
 	private TableEvent event;
-	
 	private EditOrder editOrder;
 	private AddOrder addOrder;
-	
 	public Orders instanceOrders;
 	
 	public Orders() {
@@ -148,7 +146,6 @@ public class Orders extends JPanel {
 		content2.add(content2_east, BorderLayout.EAST);
 		content2_east.setPreferredSize(new Dimension(25, 100));
 		
-		
 		//----------------------------------
 		//Table
 		orders_list = new MultiButtonTable();
@@ -156,7 +153,6 @@ public class Orders extends JPanel {
 				new Object[][] {},
 				new String[] {"ID", "Mã KH", "Tên KH", "Điện thoại", "Tổng tiền", "Trạng thái", "Ngày mua", "Cập nhật", "Thao t\u00E1c"}
 		));
-		
 		
 		//action column event
 		setActionColumnEvent();
@@ -184,13 +180,13 @@ public class Orders extends JPanel {
 	}
 	
 	//custom column by index
-		public void customColumnN(int index, int w) {
-			DefaultTableCellRenderer center = new DefaultTableCellRenderer();	
-			center.setHorizontalAlignment( JLabel.CENTER );
-			orders_list.getColumnModel().getColumn(index).setPreferredWidth(w);
-			orders_list.getColumnModel().getColumn(index).setCellRenderer(center);
-			
-		}
+	public void customColumnN(int index, int w) {
+		DefaultTableCellRenderer center = new DefaultTableCellRenderer();	
+		center.setHorizontalAlignment( JLabel.CENTER );
+		orders_list.getColumnModel().getColumn(index).setPreferredWidth(w);
+		orders_list.getColumnModel().getColumn(index).setCellRenderer(center);
+		
+	}
 		
 	//set orders to table
 	public void setOrdersToTable() {
@@ -198,7 +194,6 @@ public class Orders extends JPanel {
 		 String user_name, phone, order_state;
 		 int total_money;
 		 Date createdat, updatedat;
-		
 		
 		try {
 			Connection conn = OracleConn.getConnection();
@@ -334,6 +329,4 @@ public class Orders extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	
-	
 }

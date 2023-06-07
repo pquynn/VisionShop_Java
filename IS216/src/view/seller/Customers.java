@@ -298,13 +298,11 @@ public class Customers extends JPanel {
 		editCustomer.setVisible(true);
 	}
 	
-	
 	//sort table
 	public void sort() {
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
 		users_list.setRowSorter(sorter);
 	}
-	
 	
 	//search by column in table
 	public void searchby(String query, int searchColIndex) {

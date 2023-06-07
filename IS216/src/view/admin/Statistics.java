@@ -6,11 +6,9 @@ import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
 
-import javax.mail.search.AndTerm;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
-import org.w3c.dom.ls.LSOutput;
 
 import Connect.OracleConn;
 
@@ -26,8 +23,6 @@ import org.jfree.chart.plot.*;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.renderer.category.*;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.ComparableObjectItem;
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.border.LineBorder;
 import javax.swing.SwingConstants;
@@ -49,7 +44,6 @@ public class Statistics extends JPanel {
 	private JLabel waiting_order;
 	
 	public Statistics instanceStatistics;
-	
 	
 	public Statistics() {
 		setBackground(new Color(255, 255, 255));
@@ -276,8 +270,8 @@ public class Statistics extends JPanel {
 		content2.add(lb_year_revenue);
 		
 		displayDetail();
-		
 	}
+	
 	//set this month revenue
 	public void setMonthRevenue() {
 		try {
@@ -308,7 +302,6 @@ public class Statistics extends JPanel {
 			
 			if(rs.next()) {
 				int change_revenue = Integer.parseInt(revenue_thismonth.getText()) - rs.getInt(1);
-				String comparision = "";
 				if(change_revenue > 0)
 					this.comparision.setText("Tăng " + String.valueOf(Math.abs(change_revenue)) + " đ so với tháng trước");
 				else if(change_revenue < 0)
@@ -338,7 +331,6 @@ public class Statistics extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	//set the number of customers
 	public void setNumbOfCustomers() {
@@ -434,6 +426,7 @@ public class Statistics extends JPanel {
 		return dataset;
 	}
 	
+	// method to show piechart
 	public void showPieChart(){
 	        
 	        //create dataset
@@ -497,7 +490,7 @@ public class Statistics extends JPanel {
 		return revenue;
 	}
 	
-	
+	//method to show linechart
 	public void showLineChart(){
         //create dataset for the graph
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -529,7 +522,6 @@ public class Statistics extends JPanel {
         linechart_pane.validate();
     }
 	
-
 	//display page
 	public void displayDetail() {
 		setMonthRevenue();

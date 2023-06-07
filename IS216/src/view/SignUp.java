@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -14,7 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -27,34 +25,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 
 public class SignUp extends JFrame {
-
-	private JPanel contentPane;
-	private CustomJTextField name;
-	private CustomJTextField email;
-	private JPasswordField password;
-	private CustomJTextField address;
-	private CustomJTextField phone;
-	private JLabel emailLabel;
-	private JLabel passwordLabel;
-	private JLabel addressLabel;
-	private JLabel phoneLabel;
-	private JLabel genderLabel;
-	private JRadioButton male;
-	private JRadioButton female;
-	private JRadioButton other;
-	private ButtonGroup genderGroup;
-	private JButton signupButton;
-	private JButton cancelButton;
-	private JLabel name_error;
-	private JLabel email_error;
-	private JLabel password_error;
-	private JLabel phone_error;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -345,8 +320,6 @@ public class SignUp extends JFrame {
 		});
 	}
 	
-	
-	
 	// insert value into user table
 	public void insertSignUpDetail() {
 		String full_name = name.getText();
@@ -447,7 +420,6 @@ public class SignUp extends JFrame {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		return isExist;
 	}
 	
@@ -458,4 +430,26 @@ public class SignUp extends JFrame {
 		password_error.setText("");
 		phone_error.setText("");
 	}
+	
+	private JPanel contentPane;
+	private CustomJTextField name;
+	private CustomJTextField email;
+	private JPasswordField password;
+	private CustomJTextField address;
+	private CustomJTextField phone;
+	private JLabel emailLabel;
+	private JLabel passwordLabel;
+	private JLabel addressLabel;
+	private JLabel phoneLabel;
+	private JLabel genderLabel;
+	private JRadioButton male;
+	private JRadioButton female;
+	private JRadioButton other;
+	private ButtonGroup genderGroup;
+	private JButton signupButton;
+	private JButton cancelButton;
+	private JLabel name_error;
+	private JLabel email_error;
+	private JLabel password_error;
+	private JLabel phone_error;
 }

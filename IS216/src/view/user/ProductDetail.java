@@ -3,7 +3,6 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
 import Connect.OracleConn;
@@ -14,7 +13,6 @@ import javax.swing.JOptionPane;
 
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.JobAttributes;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Clob;
@@ -34,39 +32,6 @@ import java.awt.event.ActionEvent;
 
 public class ProductDetail extends JFrame {
 
-	private JPanel contentPane;
-	private JTextField numb_glasses;
-	private JLabel name;
-	private JLabel price;
-	private JLabel quantity;
-	private JLabel shape;
-	private JLabel material;
-	private JLabel color;
-	private JLabel category;
-	private JLabel image;
-	private JLabel description;
-	private JLabel numb_glasses_error;
-	
-	private JButton add_to_cart;
-	private JButton decrButton;
-	private JButton incrButton;
-	
-	private int glasses_id, user_id, order_id;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ProductDetail frame = new ProductDetail(2, 1);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	
 	public ProductDetail(int glasses_id, int user_id) {
 		this.glasses_id = glasses_id;
 		this.user_id = user_id;
@@ -451,6 +416,23 @@ public class ProductDetail extends JFrame {
 		incrButton.setVisible(false);
 		numb_glasses.setVisible(false);
 	}
+
+	private JPanel contentPane;
+	private JTextField numb_glasses;
+	private JLabel name;
+	private JLabel price;
+	private JLabel quantity;
+	private JLabel shape;
+	private JLabel material;
+	private JLabel color;
+	private JLabel category;
+	private JLabel image;
+	private JLabel description;
+	private JLabel numb_glasses_error;
+	private JButton add_to_cart;
+	private JButton decrButton;
+	private JButton incrButton;
+	private int glasses_id, user_id, order_id;
 }
 
 				

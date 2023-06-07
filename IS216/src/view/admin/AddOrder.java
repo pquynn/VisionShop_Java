@@ -16,8 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,54 +38,10 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class AddOrder extends JFrame {
-
-	private JPanel pane;
-	private JLabel quantity_error;
-	private JLabel name_error;
-	private JLabel phone_error;
-	private CustomJTextField name;
-	private CustomJTextField email;
-	private CustomJTextField address;
-	private CustomJTextField phone;
-	private CustomJTextField price;
-	private CustomJTextField quantity;
-	private JComboBox users_list;
-	private JComboBox products_list;
-	private JLabel number_products;
-	private JLabel total_price;
-	private JLabel txt_tota_price;
-	private JLabel txt_number;
-	
-	private JTable orderdetails_list;
-	private DefaultTableModel model;
-	private Orders orders;
-	private OrderDetail orderDetail;
-	private int order_id = -1;
-	private int user_id = -1;
-	private int glasses_id = -1;
-	private String glasses_name = "";
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddOrder frame = new AddOrder();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
 	public AddOrder() {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -453,7 +407,6 @@ public class AddOrder extends JFrame {
 		}
 	}
 	
-	
 	//set category name to combobox category
     public void setUserList() {
     	try {
@@ -472,7 +425,7 @@ public class AddOrder extends JFrame {
 		}
     }
 	
-  //user---------------------------
+    //user---------------------------
 	//set user detail by id
 	public void setUserDetailByID() {
 		//get the user_id from selected item
@@ -505,6 +458,7 @@ public class AddOrder extends JFrame {
 		}
 		
 	}
+	
 	//set category name to combobox category
     public void setProductList() {
     	try {
@@ -553,6 +507,7 @@ public class AddOrder extends JFrame {
 			}
 		}
 	}
+	
 	// insert order details-------------- 
 	public void insertOrderDetail() {
 		int quantity = Integer.parseInt(this.quantity.getText());
@@ -578,12 +533,14 @@ public class AddOrder extends JFrame {
 		}
 	}
 	
+	// reset table
 	public void resetTable() {
 		model = (DefaultTableModel) orderdetails_list.getModel();
 		model.setRowCount(0);
 		setOrderDetailToTable();
 	}
-
+	
+	//validate add order detail
 	public boolean validateAddOderDetail() {
 		String quantity = this.quantity.getText();
 		String phone = this.phone.getText();
@@ -601,11 +558,9 @@ public class AddOrder extends JFrame {
 			isValid = false;
 			quantity_error.setText("Số lượng sản phẩm phải > 0");
 		}
-		
 		return isValid;
 	}
 	
-	//----------------------------------
 	//set order detail from table to jtextfield
 	public void displayODToJTextField() {
 		int index = orderdetails_list.getSelectedRow();
@@ -648,31 +603,31 @@ public class AddOrder extends JFrame {
 	}
 	
 	// update order details-------------- 
-		public void updateOrderDetail() {
-			try {
-				Connection con = OracleConn.getConnection();
-				String sql = "update Order_detail set quantity = ? where glasses_id = ? and order_id = ?";
-				PreparedStatement prs = con.prepareStatement(sql);
-				
-				prs.setInt(1, Integer.parseInt(quantity.getText()));
-				prs.setInt(2, glasses_id);
-				prs.setInt(3, order_id);
-				
-				int RowCount = prs.executeUpdate();
-				if(RowCount > 0) {
-					//resetTable();
-					int index = orderdetails_list.getSelectedRow();
-					if(index < model.getRowCount() && index >= 0) {
-						int update_intomoney = Integer.parseInt(price.getText()) * Integer.parseInt(quantity.getText());
-						model.setValueAt(quantity.getText(), index, 2);
-						model.setValueAt(String.valueOf(update_intomoney), index, 3);
-					}
-					setTotalGlassesandPrice();
+	public void updateOrderDetail() {
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = "update Order_detail set quantity = ? where glasses_id = ? and order_id = ?";
+			PreparedStatement prs = con.prepareStatement(sql);
+			
+			prs.setInt(1, Integer.parseInt(quantity.getText()));
+			prs.setInt(2, glasses_id);
+			prs.setInt(3, order_id);
+			
+			int RowCount = prs.executeUpdate();
+			if(RowCount > 0) {
+				//resetTable();
+				int index = orderdetails_list.getSelectedRow();
+				if(index < model.getRowCount() && index >= 0) {
+					int update_intomoney = Integer.parseInt(price.getText()) * Integer.parseInt(quantity.getText());
+					model.setValueAt(quantity.getText(), index, 2);
+					model.setValueAt(String.valueOf(update_intomoney), index, 3);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				setTotalGlassesandPrice();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
 	
 	// check duplicate user 
 	public boolean checkDuplicateGlasses() {
@@ -759,7 +714,6 @@ public class AddOrder extends JFrame {
 			check = false;
 			phone_error.setText("Số điện thoại sai định dạng");
 		}		
-		
 		return check;
 	}
 	
@@ -792,6 +746,7 @@ public class AddOrder extends JFrame {
 		}
 		return isValid;
 	}
+	
 	//set order detail to table
 	public void setOrderDetailToTable() {
 		String glasses_name;
@@ -818,6 +773,7 @@ public class AddOrder extends JFrame {
 			e.printStackTrace();
 		}
 	}
+	
 	//delete order 
 	public void deleteOrder() {
 		try {
@@ -832,6 +788,7 @@ public class AddOrder extends JFrame {
 			e.printStackTrace();
 		}
 	}
+	
 	//set total glasses and total price when update order detail
 	public void setTotalGlassesandPrice() {
 		try {
@@ -850,6 +807,30 @@ public class AddOrder extends JFrame {
 			e.printStackTrace();
 		}
 	}
+
+	private JPanel pane;
+	private JLabel quantity_error;
+	private JLabel name_error;
+	private JLabel phone_error;
+	private CustomJTextField name;
+	private CustomJTextField email;
+	private CustomJTextField address;
+	private CustomJTextField phone;
+	private CustomJTextField price;
+	private CustomJTextField quantity;
+	private JComboBox users_list;
+	private JComboBox products_list;
+	private JLabel number_products;
+	private JLabel total_price;
+	private JLabel txt_tota_price;
+	private JLabel txt_number;
 	
-	
+	private JTable orderdetails_list;
+	private DefaultTableModel model;
+	private Orders orders;
+	private OrderDetail orderDetail;
+	private int order_id = -1;
+	private int user_id = -1;
+	private int glasses_id = -1;
+	private String glasses_name = "";
 }

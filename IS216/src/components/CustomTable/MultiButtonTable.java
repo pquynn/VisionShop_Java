@@ -1,31 +1,14 @@
 package components.CustomTable;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.text.TabExpander;
-
-import view.admin.EditProduct;
-import view.admin.EditProductCategory;
-import view.admin.EditUser;
-import view.user.OrderDetail;
 
 public class MultiButtonTable extends JTable{
 	private TableEvent event;
 	
-	public MultiButtonTable() {
-		}
+	public MultiButtonTable() {}
     
     public void setEvent(TableEvent ev) {
     	event = ev;
@@ -83,7 +66,6 @@ public class MultiButtonTable extends JTable{
 		getTableHeader().setForeground(Color.black);
 		getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
 		getTableHeader().setPreferredSize(new Dimension(100, 30));
-		
 		
 		for(int i = 0; i < getColumnModel().getColumnCount(); i++){
 			getColumnModel().getColumn(i).setResizable(false);

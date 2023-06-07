@@ -1,34 +1,26 @@
 package view.admin;
 
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
-import Connect.OracleConn;
-
-import java.awt.BorderLayout;
 import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.Font;
-import javax.swing.SwingConstants;
-import components.CustomJTextField;
-import javax.swing.JCheckBox;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTextArea;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.JButton;
+
+import Connect.OracleConn;
+
+import components.CustomJTextField;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class EditProductCategory extends JFrame {
 
@@ -37,22 +29,7 @@ public class EditProductCategory extends JFrame {
 	private int id;
 	private CustomJTextField txt_id;
 	private CustomJTextField txt_name;
-	
 	private JLabel name_error;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					EditProductCategory frame = new EditProductCategory();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	
 	public EditProductCategory() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -106,7 +83,6 @@ public class EditProductCategory extends JFrame {
 			}
 		});
 		
-		
 		JButton editButton = new JButton("Lưu thay đổi");
 		editButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -143,84 +119,84 @@ public class EditProductCategory extends JFrame {
 	}
 	
 	//set category detail by id to frame
-		public void setCategoryByID() {
-			txt_id.setText(String.valueOf(id));
-			try {
-				Connection conn = OracleConn.getConnection();
-				String sql = "select * from \"Category\" where category_id = ?";
-				PreparedStatement pst = conn.prepareStatement(sql);
-				pst.setString(1, String.valueOf(id));
-				ResultSet rs = pst.executeQuery();
-				
-				while(rs.next())
-					txt_name.setText(rs.getString("category_name"));
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		//update user detail 
-		public void updateCategoryById() {
-			String name = txt_name.getText();
+	public void setCategoryByID() {
+		txt_id.setText(String.valueOf(id));
+		try {
+			Connection conn = OracleConn.getConnection();
+			String sql = "select * from \"Category\" where category_id = ?";
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setString(1, String.valueOf(id));
+			ResultSet rs = pst.executeQuery();
 			
-			try {
-				Connection con = OracleConn.getConnection();
-				String sql = 
-					"update \"Category\" set category_name = ? where category_id = ?";
-				PreparedStatement prs = con.prepareStatement(sql);
-				
-				prs.setString(1, name);
-				prs.setInt(2, id);
-				
-				int RowCount = prs.executeUpdate();
-				if(RowCount > 0) {
-					JOptionPane.showMessageDialog(null, "Cập nhật thành công");
-					resetTable();
-					dispose();
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Cập nhật không thành công");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			while(rs.next())
+				txt_name.setText(rs.getString("category_name"));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//update user detail 
+	public void updateCategoryById() {
+		String name = txt_name.getText();
+		
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = 
+				"update \"Category\" set category_name = ? where category_id = ?";
+			PreparedStatement prs = con.prepareStatement(sql);
+			
+			prs.setString(1, name);
+			prs.setInt(2, id);
+			
+			int RowCount = prs.executeUpdate();
+			if(RowCount > 0) {
+				JOptionPane.showMessageDialog(null, "Cập nhật thành công");
+				resetTable();
+				dispose();
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "Cập nhật không thành công");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//check duplicate category_name
+	public boolean checkDuplicate() {
+		String name = txt_name.getText();
+		boolean isExist = false;
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = "select * from \"Category\" where category_name = ? and category_id <> ?";
+			PreparedStatement pst = con.prepareStatement(sql);
+			pst.setString(1, name);
+			pst.setInt(2, id);
+			ResultSet rs = pst.executeQuery();
+			
+			if(rs.next()) {
+				isExist = true;
 			}
 		}
-		
-		//check duplicate category_name
-		public boolean checkDuplicate() {
-			String name = txt_name.getText();
-			boolean isExist = false;
-			try {
-				Connection con = OracleConn.getConnection();
-				String sql = "select * from \"Category\" where category_name = ? and category_id <> ?";
-				PreparedStatement pst = con.prepareStatement(sql);
-				pst.setString(1, name);
-				pst.setInt(2, id);
-				ResultSet rs = pst.executeQuery();
-				
-				if(rs.next()) {
-					isExist = true;
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-			return isExist;
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		// to reset jtable after updating
-		public void resetTable() {
-			productCategory.clearTable();
-			productCategory.setCategoryToTable();
-		}
-		
-		
-		public void setCategoryPane(ProductCategory pc) {
-			productCategory = pc;
-		}
-		
-		public void setId(int id) {
-			this.id = id;
-		}
+		return isExist;
+	}
+	
+	// to reset jtable after updating
+	public void resetTable() {
+		productCategory.clearTable();
+		productCategory.setCategoryToTable();
+	}
+	
+	// set category panel
+	public void setCategoryPane(ProductCategory pc) {
+		productCategory = pc;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
 }

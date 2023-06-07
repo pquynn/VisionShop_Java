@@ -27,24 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Admin extends JPanel {
-	private JPanel subBar;
-	
-	private JButton statistic;
-	private JButton glasses_categories;
-	private JButton glasses;
-	private JButton orders;
-	private JButton users;
-	private JButton customers;
-	
-	private Statistics statisticsPanel;
-	private Products productsPanel;
-	private ProductCategory categoryPanel;
-	private Users usersPanel;
-	private Orders ordersPanel;
-	private Customers customersPanel;
-	
-	private int user_id;
-	public Admin instanceAdmin;
 	
 	public Admin(int user_id) {
 		setBackground(new Color(255, 255, 255));
@@ -121,7 +103,6 @@ public class Admin extends JPanel {
 			}
 		});
 		
-
 		//--orders 
 		orders = new JButton(" Đơn hàng");
 		orders.setBounds(0, 0, 93, 40);
@@ -167,8 +148,6 @@ public class Admin extends JPanel {
 			}
 		});
 			
-		
-	
 		//--glasses_categories 
 		glasses_categories = new JButton("Loại kính");
 		glasses_categories.setBounds(0, 0, 93, 40);
@@ -213,7 +192,6 @@ public class Admin extends JPanel {
 				}
 			}
 		});
-		
 
 		//--glasses 
 		glasses = new JButton("Kính mắt");
@@ -349,12 +327,9 @@ public class Admin extends JPanel {
 			}
 		});
 		
-		
 		JPanel grid_tail = new JPanel();
 		subBar.add(grid_tail);
 		grid_tail.setBackground(Color.WHITE);
-		
-		
 		
 		if(isSeller()) {
 			//hid statistic
@@ -372,7 +347,7 @@ public class Admin extends JPanel {
 		}
 	}
 	
-	
+	// check if user is seller
 	public boolean isSeller() {
 		boolean check = false;
 		try {
@@ -384,12 +359,25 @@ public class Admin extends JPanel {
 			if(rs.next()) {
 				check = true;
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		return check;
 	}
 	
+	private JPanel subBar;
+	private JButton statistic;
+	private JButton glasses_categories;
+	private JButton glasses;
+	private JButton orders;
+	private JButton users;
+	private JButton customers;
+	private Statistics statisticsPanel;
+	private Products productsPanel;
+	private ProductCategory categoryPanel;
+	private Users usersPanel;
+	private Orders ordersPanel;
+	private Customers customersPanel;
+	private int user_id;
+	public Admin instanceAdmin;
 }

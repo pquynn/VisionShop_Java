@@ -24,7 +24,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
@@ -42,29 +41,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Account extends JPanel {
-	private CustomJTextField name;
-	private CustomJTextField email;
-	private CustomJTextField address;
-	private CustomJTextField phone;
-	private JRadioButton male;
-	private JRadioButton female;
-	private JRadioButton other;
-	private ButtonGroup gender;
-	private JLabel name_display;
-	private JLabel email_display;
-	private JLabel avatar;
-	
-	private JLabel name_error;
-	private JLabel email_error;
-	private JLabel phone_error;
-	
-	public Account instanceAccount;
-	private int user_id;
-	private JFileChooser file;
-	private File selectedFile;
-	private boolean isChanged = false;
-	
-	private ChangePassword changePassword;
 	
 	public Account(int user_id) {
 		setBackground(new Color(255, 255, 255));
@@ -92,6 +68,10 @@ public class Account extends JPanel {
 		avatar_setting.setPreferredSize(new Dimension(400,100));
 		
 		avatar = new JLabel("");
+		avatar.setIcon(new ImageIcon(Account.class.getResource("/assets/avatar_large_icon.png")));
+		avatar.setHorizontalAlignment(SwingConstants.CENTER);
+		avatar.setBounds(172, 86, 150, 150);
+		avatar_setting.add(avatar);
 		avatar.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				
@@ -115,10 +95,6 @@ public class Account extends JPanel {
 		          }
 			}
 		});
-		avatar.setIcon(new ImageIcon(Account.class.getResource("/assets/avatar_large_icon.png")));
-		avatar.setHorizontalAlignment(SwingConstants.CENTER);
-		avatar.setBounds(172, 86, 150, 150);
-		avatar_setting.add(avatar);
 		
 		name_display = new JLabel("name");
 		name_display.setHorizontalAlignment(SwingConstants.CENTER);
@@ -330,127 +306,147 @@ public class Account extends JPanel {
 	}
 	
 	//update user detail 
-		public void updateUserDetailById() {
-			String full_name = name.getText();
-			String address = this.address.getText(); //xet email khi thay doi da ton tai cha
-			String email = this.email.getText(); //xet email co hop le ko
-			String phone = this.phone.getText(); //xet so dt khi thay doi co hop le ko
-			String gender = null;
+	public void updateUserDetailById() {
+		String full_name = name.getText();
+		String address = this.address.getText(); //xet email khi thay doi da ton tai cha
+		String email = this.email.getText(); //xet email co hop le ko
+		String phone = this.phone.getText(); //xet so dt khi thay doi co hop le ko
+		String gender = null;
+		
+		if(this.gender.getSelection() != null)
+			 gender = this.gender.getSelection().getActionCommand();
+		
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = 
+				"update \"User\" set full_name=?,address=?,email=?,phone=?,gender=? where user_id=?";
+			PreparedStatement prs = con.prepareStatement(sql);
 			
-			if(this.gender.getSelection() != null)
-				 gender = this.gender.getSelection().getActionCommand();
+			prs.setString(1, full_name);
+			prs.setString(2, address);
+			prs.setString(3, email);
+			prs.setString(4, phone);
+			prs.setString(5, gender);
+			prs.setInt(6, user_id);
 			
+			int RowCount = prs.executeUpdate();
+			if(RowCount > 0) {
+				JOptionPane.showMessageDialog(null, "Cập nhật thành công");
+				setUserDetail();
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "Cập nhật không thành công");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if(isChanged) {
 			try {
 				Connection con = OracleConn.getConnection();
 				String sql = 
-					"update \"User\" set full_name=?,address=?,email=?,phone=?,gender=? where user_id=?";
+					"update \"User\" set image=? where user_id=?";
 				PreparedStatement prs = con.prepareStatement(sql);
-				
-				prs.setString(1, full_name);
-				prs.setString(2, address);
-				prs.setString(3, email);
-				prs.setString(4, phone);
-				prs.setString(5, gender);
-				prs.setInt(6, user_id);
-				
-				int RowCount = prs.executeUpdate();
-				if(RowCount > 0) {
-					JOptionPane.showMessageDialog(null, "Cập nhật thành công");
-					setUserDetail();
+				InputStream in = new FileInputStream(selectedFile);
+				prs.setBlob(1, in);
+				prs.setInt(2, user_id);
+				int rowcount = prs.executeUpdate();
+				if(rowcount < 0) {
+					JOptionPane.showMessageDialog(null, "Cập nhật hình ảnh không thành công");
 				}
-				else {
-					JOptionPane.showMessageDialog(null, "Cập nhật không thành công");
-				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-			if(isChanged) {
-				try {
-					Connection con = OracleConn.getConnection();
-					String sql = 
-						"update \"User\" set image=? where user_id=?";
-					PreparedStatement prs = con.prepareStatement(sql);
-					InputStream in = new FileInputStream(selectedFile);
-					prs.setBlob(1, in);
-					prs.setInt(2, user_id);
-					int rowcount = prs.executeUpdate();
-					if(rowcount < 0) {
-						JOptionPane.showMessageDialog(null, "Cập nhật hình ảnh không thành công");
-					}
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 		}
+	}
+	
+	public void createNewChangePassword() {
+		changePassword = new ChangePassword(user_id);
+		changePassword.setAccountPanel(this);
+		changePassword.setVisible(true);
+	}
+	
+	//validation
+	public boolean validateUser() {
+		String full_name = name.getText();
+		String email = this.email.getText();
+		String phone = this.phone.getText();
 		
-		public void createNewChangePassword() {
-			changePassword = new ChangePassword(user_id);
-			changePassword.setAccountPanel(this);
-			changePassword.setVisible(true);
-		}
-		
-		//validation
-		public boolean validateUser() {
-			String full_name = name.getText();
-			String email = this.email.getText();
-			String phone = this.phone.getText();
-			
-			boolean check = true;
-			//full name
-			if (full_name.equals("")) {
-				name_error.setText("Yêu cầu nhập Họ tên.");
-				check = false;
-			}
-			//email
-			if (email.equals("")) {
-				email_error.setText("Yêu cầu nhập Email.");
-				check = false;
-			}
-			else if (!email.matches("^.+@.+\\..+$")) {
-					email_error.setText("Email không hợp lệ.");
-					check = false;
-				}
-			else if (checkDuplicateUser()) {
-				email_error.setText("Email này đã tồn tại");
-			}
-			
-			//phone
-			if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+		boolean check = true;
+		//full name
+		if (full_name.equals("")) {
+			name_error.setText("Yêu cầu nhập Họ tên.");
 			check = false;
+		}
+		//email
+		if (email.equals("")) {
+			email_error.setText("Yêu cầu nhập Email.");
+			check = false;
+		}
+		else if (!email.matches("^.+@.+\\..+$")) {
+				email_error.setText("Email không hợp lệ.");
+				check = false;
 			}
-			return check;
+		else if (checkDuplicateUser()) {
+			email_error.setText("Email này đã tồn tại");
 		}
 		
-		// check duplicate user 
-		public boolean checkDuplicateUser() {
-			String email = this.email.getText();
-			boolean isExist = false;
-			try {
-				Connection con = OracleConn.getConnection();
-				String sql = "select * from \"User\" where email = ? and user_id <> ?";
-				PreparedStatement pst = con.prepareStatement(sql);
-				pst.setString(1, email);
-				pst.setInt(2, user_id);
-				ResultSet rs = pst.executeQuery();
-				
-				if(rs.next()) {
-					isExist = true;
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+		//phone
+		if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+		check = false;
+		}
+		return check;
+	}
+	
+	// check duplicate user 
+	public boolean checkDuplicateUser() {
+		String email = this.email.getText();
+		boolean isExist = false;
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = "select * from \"User\" where email = ? and user_id <> ?";
+			PreparedStatement pst = con.prepareStatement(sql);
+			pst.setString(1, email);
+			pst.setInt(2, user_id);
+			ResultSet rs = pst.executeQuery();
 			
-			return isExist;
+			if(rs.next()) {
+				isExist = true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-		// clear validation messages 
-		public void clearMessage() {
-			name_error.setText("");
-			email_error.setText("");
-			phone_error.setText("");
-		}
-				
+		return isExist;
+	}
+	
+	// clear validation messages 
+	public void clearMessage() {
+		name_error.setText("");
+		email_error.setText("");
+		phone_error.setText("");
+	}
+	
+	private CustomJTextField name;
+	private CustomJTextField email;
+	private CustomJTextField address;
+	private CustomJTextField phone;
+	private JRadioButton male;
+	private JRadioButton female;
+	private JRadioButton other;
+	private ButtonGroup gender;
+	private JLabel name_display;
+	private JLabel email_display;
+	private JLabel avatar;
+	private JLabel name_error;
+	private JLabel email_error;
+	private JLabel phone_error;
+	public Account instanceAccount;
+	private int user_id;
+	private JFileChooser file;
+	private File selectedFile;
+	private boolean isChanged = false;
+	private ChangePassword changePassword;		
 }

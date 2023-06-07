@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 public class CustomJTextField extends JTextField{
@@ -35,6 +34,4 @@ public class CustomJTextField extends JTextField{
 	public void setTypingStyle() {
 		setForeground(new Color(105,105,105));
 	}
-	
-	
 }

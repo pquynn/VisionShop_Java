@@ -4,14 +4,10 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import Connect.OracleConn;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,9 +21,6 @@ import java.sql.ResultSet;
 
 import javax.swing.SwingConstants;
 import components.CustomJTextField;
-import view.Login;
-
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.ButtonGroup;
@@ -38,37 +31,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class AddUser extends JFrame {
-
-	private JPanel contentPane;
-	private JRadioButton male;
-	private JRadioButton female;
-	private JRadioButton other;
-	private JLabel name_error;
-	private JLabel email_error;
-	private JLabel password_error;
-	private JLabel phone_error;
-	private CustomJTextField name;
-	private CustomJTextField email;
-	private CustomJTextField password;
-	private CustomJTextField address;
-	private CustomJTextField phone;
-	private JComboBox role;
-	private ButtonGroup gender;
-	private Users users;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddUser frame = new AddUser();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	
 	public AddUser() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -346,9 +308,6 @@ public class AddUser extends JFrame {
 
 	}
 	
-	
-
-	
 	// insert value into user table
 	public void insertUser() {
 		String full_name = name.getText();
@@ -467,9 +426,25 @@ public class AddUser extends JFrame {
 		users.setUsersToTable();
 	}
 	
+	// set user panel
 	public void setUsersPanel(Users users) {
 		this.users = users;
 	}
-	
-	
+
+	private JPanel contentPane;
+	private JRadioButton male;
+	private JRadioButton female;
+	private JRadioButton other;
+	private JLabel name_error;
+	private JLabel email_error;
+	private JLabel password_error;
+	private JLabel phone_error;
+	private CustomJTextField name;
+	private CustomJTextField email;
+	private CustomJTextField password;
+	private CustomJTextField address;
+	private CustomJTextField phone;
+	private JComboBox role;
+	private ButtonGroup gender;
+	private Users users;
 }

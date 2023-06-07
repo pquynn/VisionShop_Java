@@ -4,34 +4,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 
-import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
-import components.ProductPanels.ProductInCart;
 import components.ProductPanels.ProductThumbnail;
 
 import java.awt.BorderLayout;
 
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
 
 import java.awt.Font;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
-
 import Connect.OracleConn;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
@@ -39,7 +24,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.regex.PatternSyntaxException;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
@@ -213,7 +197,7 @@ public class Home extends JPanel {
     	return id;
     }
 	
-	//get product list from db
+	//get product list from db by glasses_category
 	public ArrayList<Object[]> getProductsListByCategory(){
 		String category_name = category_list.getSelectedItem().toString();
 		if(category_name.equals("Tất cả")) {

@@ -5,12 +5,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import Connect.OracleConn;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,7 +15,6 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import components.CustomJTextField;
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.ButtonGroup;
@@ -26,47 +22,12 @@ import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.security.Identity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 
 public class EditUser extends JFrame {
-
-	private JPanel contentPane;
-	private CustomJTextField name;
-	private CustomJTextField email;
-	private CustomJTextField password;
-	private CustomJTextField address;
-	private CustomJTextField phone;
-	private JComboBox role;
-	private JRadioButton male;
-	private JRadioButton female;
-	private JRadioButton other;
-	private ButtonGroup gender;
-	
-	private JLabel name_error;
-	private JLabel email_error;
-	private JLabel password_error;
-	private JLabel phone_error;
-	
-	private Users users;
-	private int id;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					EditUser frame = new EditUser();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	
 	public EditUser() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -344,74 +305,74 @@ public class EditUser extends JFrame {
 	}
 	
 	//validation
-		public boolean validateUser() {
-			String full_name = name.getText();
-			String password = this.password.getText();
-			String email = this.email.getText();
-			String phone = this.phone.getText();
-			
-			boolean check = true;
-			//full name
-			if (full_name.equals("")) {
-				name_error.setText("Yêu cầu nhập Họ tên.");
-				check = false;
-			}
-			//email
-			if (email.equals("")) {
-				email_error.setText("Yêu cầu nhập Email.");
-				check = false;
-			}
-			else if (!email.matches("^.+@.+\\..+$")) {
-					email_error.setText("Email không hợp lệ.");
-					check = false;
-				}
-			
-			//password
-			if (password.equals("")) {
-				password_error.setText("Yêu cầu nhập Mật khẩu.");
-				check = false;
-			}
-			else if (checkDuplicateUser()) {
-				email_error.setText("Email này đã tồn tại");
-			}
-			
-			//phone
-			if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+	public boolean validateUser() {
+		String full_name = name.getText();
+		String password = this.password.getText();
+		String email = this.email.getText();
+		String phone = this.phone.getText();
+		
+		boolean check = true;
+		//full name
+		if (full_name.equals("")) {
+			name_error.setText("Yêu cầu nhập Họ tên.");
 			check = false;
+		}
+		//email
+		if (email.equals("")) {
+			email_error.setText("Yêu cầu nhập Email.");
+			check = false;
+		}
+		else if (!email.matches("^.+@.+\\..+$")) {
+				email_error.setText("Email không hợp lệ.");
+				check = false;
 			}
-			return check;
+		
+		//password
+		if (password.equals("")) {
+			password_error.setText("Yêu cầu nhập Mật khẩu.");
+			check = false;
+		}
+		else if (checkDuplicateUser()) {
+			email_error.setText("Email này đã tồn tại");
 		}
 		
-		// check duplicate user 
-		public boolean checkDuplicateUser() {
-			String email = this.email.getText();
-			boolean isExist = false;
-			try {
-				Connection con = OracleConn.getConnection();
-				String sql = "select * from \"User\" where email = ? and user_id <> ?";
-				PreparedStatement pst = con.prepareStatement(sql);
-				pst.setString(1, email);
-				pst.setInt(2, id);
-				ResultSet rs = pst.executeQuery();
-				
-				if(rs.next()) {
-					isExist = true;
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+		//phone
+		if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+		check = false;
+		}
+		return check;
+	}
+	
+	// check duplicate user 
+	public boolean checkDuplicateUser() {
+		String email = this.email.getText();
+		boolean isExist = false;
+		try {
+			Connection con = OracleConn.getConnection();
+			String sql = "select * from \"User\" where email = ? and user_id <> ?";
+			PreparedStatement pst = con.prepareStatement(sql);
+			pst.setString(1, email);
+			pst.setInt(2, id);
+			ResultSet rs = pst.executeQuery();
 			
-			return isExist;
+			if(rs.next()) {
+				isExist = true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-		// clear validation messages 
-		public void clearMessage() {
-			name_error.setText("");
-			email_error.setText("");
-			password_error.setText("");
-			phone_error.setText("");
-		}
+		return isExist;
+	}
+	
+	// clear validation messages 
+	public void clearMessage() {
+		name_error.setText("");
+		email_error.setText("");
+		password_error.setText("");
+		phone_error.setText("");
+	}
 		
 	
 	// to reset jtable after updating
@@ -427,5 +388,22 @@ public class EditUser extends JFrame {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
+	private JPanel contentPane;
+	private CustomJTextField name;
+	private CustomJTextField email;
+	private CustomJTextField password;
+	private CustomJTextField address;
+	private CustomJTextField phone;
+	private JComboBox role;
+	private JRadioButton male;
+	private JRadioButton female;
+	private JRadioButton other;
+	private ButtonGroup gender;
+	private JLabel name_error;
+	private JLabel email_error;
+	private JLabel password_error;
+	private JLabel phone_error;
+	private Users users;
+	private int id;
 }

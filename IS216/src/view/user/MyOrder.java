@@ -10,15 +10,10 @@ import javax.swing.table.TableRowSorter;
 import Connect.OracleConn;
 import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
-import components.CustomTable.MultiButtonTable;
-import components.CustomTable.TableEvent;
-import view.admin.AddOrder;
-import view.admin.EditOrderDetail;
 
 import java.awt.BorderLayout;
 import javax.swing.JTable;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import java.awt.Font;
 import java.awt.event.FocusAdapter;
@@ -34,7 +29,6 @@ import java.sql.ResultSet;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.SwingConstants;
-import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.border.LineBorder;
 import javax.swing.JComboBox;
@@ -44,7 +38,6 @@ public class MyOrder extends JPanel{
 	private JTable orders_list;
 	private CustomJTextField search_order;
 	private JComboBox table_col;
-	
 	private DefaultTableModel model;
 	private int user_id = -1;
 	public MyOrder instanceMyOrder;
@@ -176,8 +169,6 @@ public class MyOrder extends JPanel{
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();	
 		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 		scrollPane.setViewportView(orders_list);
-		
-		
 	}
 			
 	//custom column by index
@@ -186,7 +177,6 @@ public class MyOrder extends JPanel{
 		center.setHorizontalAlignment( JLabel.CENTER );
 		orders_list.getColumnModel().getColumn(index).setPreferredWidth(w);
 		orders_list.getColumnModel().getColumn(index).setCellRenderer(center);
-		
 	}
 		
 	//set orders to table
@@ -255,6 +245,5 @@ public class MyOrder extends JPanel{
                 System.out.println("Bad regex pattern");
             }
         }
-		
 	}
 }

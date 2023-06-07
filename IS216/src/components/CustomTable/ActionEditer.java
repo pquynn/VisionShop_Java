@@ -1,22 +1,11 @@
 package components.CustomTable;
 
 import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.EventObject;
 
-import javax.security.auth.kerberos.DelegationPermission;
-import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellEditor;
 
 //AbstractCellEditor
@@ -30,8 +19,6 @@ public class ActionEditer extends DefaultCellEditor implements TableCellEditor {
     	
     }
     
-   
-
     public boolean isCellEditable(EventObject e) {
         return true;
     }

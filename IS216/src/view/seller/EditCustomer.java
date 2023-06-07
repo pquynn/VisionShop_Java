@@ -5,12 +5,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import Connect.OracleConn;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,15 +15,11 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import components.CustomJTextField;
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.security.Identity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,39 +27,6 @@ import java.awt.event.ActionEvent;
 
 public class EditCustomer extends JFrame {
 
-	private JPanel contentPane;
-	private CustomJTextField name;
-	private CustomJTextField email;
-	private CustomJTextField password;
-	private CustomJTextField address;
-	private CustomJTextField phone;
-	private JRadioButton male;
-	private JRadioButton female;
-	private JRadioButton other;
-	private ButtonGroup gender;
-	
-	private JLabel name_error;
-	private JLabel email_error;
-	private JLabel password_error;
-	private JLabel phone_error;
-	
-	private Customers customers;
-	private int id;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					EditCustomer frame = new EditCustomer();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	
 	public EditCustomer() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -392,7 +352,6 @@ public class EditCustomer extends JFrame {
 		phone_error.setText("");
 	}
 		
-	
 	public void setUsersPanel(Customers customers) {
 		this.customers = customers;
 	}
@@ -400,5 +359,24 @@ public class EditCustomer extends JFrame {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	private JPanel contentPane;
+	private CustomJTextField name;
+	private CustomJTextField email;
+	private CustomJTextField password;
+	private CustomJTextField address;
+	private CustomJTextField phone;
+	private JRadioButton male;
+	private JRadioButton female;
+	private JRadioButton other;
+	private ButtonGroup gender;
+	private JLabel name_error;
+	private JLabel email_error;
+	private JLabel password_error;
+	private JLabel phone_error;
+	private Customers customers;
+	private int id;
+
+	
 	
 }

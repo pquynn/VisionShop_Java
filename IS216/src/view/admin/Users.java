@@ -8,7 +8,6 @@ import components.CustomJTextField;
 import components.CustomScrollPane.CustomScrollPane;
 import components.CustomTable.MultiButtonTable;
 import components.CustomTable.TableEvent;
-import view.user.OrderDetail;
 
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
@@ -26,7 +25,6 @@ import java.sql.ResultSet;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -39,8 +37,6 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class Users extends JPanel {
 
@@ -52,7 +48,7 @@ public class Users extends JPanel {
 	private Object[][] data;
 	private CustomScrollPane scrollPane;
 	
-	private String name, email, role, phone, address;
+	private String name, email, role;
 	private int id;
 	private Date createdat, updatedat;
 	private DefaultTableModel model;
@@ -167,7 +163,6 @@ public class Users extends JPanel {
 		
 		//----------------------------------
 		//Table
-		
 		users_list = new MultiButtonTable();
 		users_list.setModel(new DefaultTableModel(
 				new Object[][] {},
@@ -304,13 +299,11 @@ public class Users extends JPanel {
 		edituser.setVisible(true);
 	}
 	
-	
 	//sort table
 	public void sort() {
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
 		users_list.setRowSorter(sorter);
 	}
-	
 	
 	//search by column in table
 	public void searchby(String query, int searchColIndex) {

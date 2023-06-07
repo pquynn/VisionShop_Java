@@ -59,7 +59,6 @@ public class Login extends JFrame {
 			}
 		});
 	}
-
 	
 	public Login() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +96,6 @@ public class Login extends JFrame {
 				}
 			}
 		});
-		
 		
 		password = new JPasswordField("Mật khẩu");
 		password.setLocation(302, 211);

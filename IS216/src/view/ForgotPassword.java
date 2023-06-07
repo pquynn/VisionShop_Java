@@ -4,12 +4,6 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,10 +21,7 @@ import java.awt.event.FocusEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Properties;
 import java.awt.event.ActionEvent;
-
-
 
 public class ForgotPassword extends JFrame {
 
@@ -87,8 +78,6 @@ public class ForgotPassword extends JFrame {
 			}
 		});
 		
-		
-		
 		JButton confirmButton = new JButton("Lấy lại mật khẩu");
 		confirmButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -108,7 +97,6 @@ public class ForgotPassword extends JFrame {
 			}
 		});
 		
-
 		confirmButton.setForeground(Color.WHITE);
 		confirmButton.setFont(new Font("SansSerif", Font.BOLD, 16));
 		confirmButton.setBackground(Color.BLACK);

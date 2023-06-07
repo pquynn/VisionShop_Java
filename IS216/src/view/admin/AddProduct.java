@@ -40,50 +40,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class AddProduct extends JFrame {
-
-	private JPanel contentPane;
-	private CustomJTextField name;
-	private CustomJTextField price;
-	private CustomJTextField quantity;
-	private JTextArea description;
-	private CustomJTextField shape;
-	private CustomJTextField material;
-	private CustomJTextField color;
-	private JComboBox category;
-	private JLabel image;
-	
-	private JLabel name_error;
-	private JLabel price_error;
-	private JLabel quantity_error;
-	private JLabel shape_error;
-	private JLabel material_error;
-	private JLabel color_error;
-	private JLabel description_error;
-	private JLabel image_error;
-	
-	private Products product;
-	private Statistics statistics;
-	
-	private String tname, tprice, tquantity, tdescription, tshape, tcolor, tmaterial, tcategory;
-	private JFileChooser file;
-	private File selectedFile;
-	private boolean isExits = false;
-	
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddProduct frame = new AddProduct();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	
 	public AddProduct() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -648,4 +604,33 @@ public class AddProduct extends JFrame {
 		}
     	return id;
     }
+    
+    private JPanel contentPane;
+	private CustomJTextField name;
+	private CustomJTextField price;
+	private CustomJTextField quantity;
+	private JTextArea description;
+	private CustomJTextField shape;
+	private CustomJTextField material;
+	private CustomJTextField color;
+	private JComboBox category;
+	private JLabel image;
+	
+	private JLabel name_error;
+	private JLabel price_error;
+	private JLabel quantity_error;
+	private JLabel shape_error;
+	private JLabel material_error;
+	private JLabel color_error;
+	private JLabel description_error;
+	private JLabel image_error;
+	
+	private Products product;
+	private Statistics statistics;
+	
+	private String tname, tprice, tquantity, tdescription, tshape, tcolor, tmaterial, tcategory;
+	private JFileChooser file;
+	private File selectedFile;
+	private boolean isExits = false;
+	
 }
