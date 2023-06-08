@@ -67,18 +67,6 @@ public class EditCustomer extends JFrame {
 		email.setTypingStyle();
 		contentPane.add(email);
 		
-		JLabel passwordLabel = new JLabel("Mật khẩu:");
-		passwordLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		passwordLabel.setForeground(Color.GRAY);
-		passwordLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		passwordLabel.setBounds(85, 216, 71, 32);
-		contentPane.add(passwordLabel);
-		
-		password = new CustomJTextField("Mật khẩu");
-		password.setBounds(161, 218, 228, 32);
-		password.setTypingStyle();
-		contentPane.add(password);
-		
 		JLabel addressLabel = new JLabel("Địa chỉ: ");
 		addressLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		addressLabel.setForeground(Color.GRAY);
@@ -159,7 +147,7 @@ public class EditCustomer extends JFrame {
 		editButton.setForeground(Color.WHITE);
 		editButton.setFont(new Font("SansSerif", Font.BOLD, 16));
 		editButton.setBackground(Color.BLACK);
-		editButton.setBounds(231, 373, 197, 32);
+		editButton.setBounds(231, 328, 197, 32);
 		contentPane.add(editButton);
 		editButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -181,7 +169,7 @@ public class EditCustomer extends JFrame {
 		cancelButton.setForeground(Color.BLACK);
 		cancelButton.setFont(new Font("SansSerif", Font.BOLD, 16));
 		cancelButton.setBackground(Color.WHITE);
-		cancelButton.setBounds(439, 373, 197, 32);
+		cancelButton.setBounds(439, 328, 197, 32);
 		contentPane.add(cancelButton);
 		
 		name_error = new JLabel();
@@ -195,12 +183,6 @@ public class EditCustomer extends JFrame {
 		email_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		email_error.setBounds(161, 200, 109, 21);
 		contentPane.add(email_error);
-		
-		password_error = new JLabel();
-		password_error.setForeground(Color.RED);
-		password_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		password_error.setBounds(161, 251, 155, 21);
-		contentPane.add(password_error);
 		
 		phone_error = new JLabel();
 		phone_error.setForeground(Color.RED);
@@ -223,9 +205,7 @@ public class EditCustomer extends JFrame {
 				email.setText(rs.getString("email"));
 				address.setText(rs.getString("address"));
 				phone.setText(rs.getString("phone"));
-				password.setText(rs.getString("\"password\""));
 				String genderString = rs.getString("gender");
-				
 				
 				if(male.getText().equals(genderString))
 					male.setSelected(true);
@@ -246,26 +226,23 @@ public class EditCustomer extends JFrame {
 		String full_name = name.getText();
 		String address = this.address.getText(); //xet email khi thay doi da ton tai cha
 		String email = this.email.getText(); //xet email co hop le ko
-		String password = this.password.getText();
 		String phone = this.phone.getText(); //xet so dt khi thay doi co hop le ko
 		String gender = null;
 		
 		if(this.gender.getSelection() != null)
 			 gender = this.gender.getSelection().getActionCommand();
-		System.out.println(full_name + address + email+password+phone+gender);
 		try {
 			Connection con = OracleConn.getConnection();
 			String sql = 
-				"update \"User\" set full_name=?,address=?,email=?,\"password\"=?,phone=?,gender=? where user_id=? and role_id = 3";
+				"update \"User\" set full_name=?,address=?,email=?,phone=?,gender=? where user_id=? and role_id = 3";
 			PreparedStatement prs = con.prepareStatement(sql);
 			
 			prs.setString(1, full_name);
 			prs.setString(2, address);
 			prs.setString(3, email);
-			prs.setString(4, password);
-			prs.setString(5, phone);
-			prs.setString(6, gender);
-			prs.setInt(7, id);
+			prs.setString(4, phone);
+			prs.setString(5, gender);
+			prs.setInt(6, id);
 			System.out.println("trc khi cap nhat");
 			int RowCount = prs.executeUpdate();
 			if(RowCount > 0) {
@@ -285,7 +262,6 @@ public class EditCustomer extends JFrame {
 	//validation
 	public boolean validateUser() {
 		String full_name = name.getText();
-		String password = this.password.getText();
 		String email = this.email.getText();
 		String phone = this.phone.getText();
 		
@@ -303,12 +279,6 @@ public class EditCustomer extends JFrame {
 		else if (!email.matches("^.+@.+\\..+$")) {
 				email_error.setText("Email không hợp lệ.");
 				check = false;
-			}
-		
-		//password
-		if (password.equals("")) {
-			password_error.setText("Yêu cầu nhập Mật khẩu.");
-			check = false;
 		}
 		else if (checkDuplicateUser()) {
 			email_error.setText("Email này đã tồn tại");
@@ -348,7 +318,6 @@ public class EditCustomer extends JFrame {
 	public void clearMessage() {
 		name_error.setText("");
 		email_error.setText("");
-		password_error.setText("");
 		phone_error.setText("");
 	}
 		
@@ -363,7 +332,6 @@ public class EditCustomer extends JFrame {
 	private JPanel contentPane;
 	private CustomJTextField name;
 	private CustomJTextField email;
-	private CustomJTextField password;
 	private CustomJTextField address;
 	private CustomJTextField phone;
 	private JRadioButton male;
@@ -372,11 +340,7 @@ public class EditCustomer extends JFrame {
 	private ButtonGroup gender;
 	private JLabel name_error;
 	private JLabel email_error;
-	private JLabel password_error;
 	private JLabel phone_error;
 	private Customers customers;
 	private int id;
-
-	
-	
 }

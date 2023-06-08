@@ -301,6 +301,7 @@ public class Users extends JPanel {
 	
 	//sort table
 	public void sort() {
+		model = (DefaultTableModel) users_list.getModel();
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
 		users_list.setRowSorter(sorter);
 	}

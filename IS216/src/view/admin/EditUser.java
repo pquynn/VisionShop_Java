@@ -1,7 +1,5 @@
 package view.admin;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -68,19 +66,7 @@ public class EditUser extends JFrame {
 		email.setBounds(161, 167, 228, 32);
 		email.setTypingStyle();
 		contentPane.add(email);
-		
-		JLabel passwordLabel = new JLabel("Mật khẩu:");
-		passwordLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		passwordLabel.setForeground(Color.GRAY);
-		passwordLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		passwordLabel.setBounds(85, 216, 71, 32);
-		contentPane.add(passwordLabel);
-		
-		password = new CustomJTextField("Mật khẩu");
-		password.setBounds(161, 218, 228, 32);
-		password.setTypingStyle();
-		contentPane.add(password);
-		
+	
 		JLabel addressLabel = new JLabel("Địa chỉ: ");
 		addressLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		addressLabel.setForeground(Color.GRAY);
@@ -88,7 +74,7 @@ public class EditUser extends JFrame {
 		addressLabel.setBounds(448, 120, 71, 32);
 		contentPane.add(addressLabel);
 		
-		 address = new CustomJTextField("Địa chỉ");
+		address = new CustomJTextField("Địa chỉ");
 		address.setBounds(529, 122, 228, 32);
 		address.setTypingStyle();
 		contentPane.add(address);
@@ -100,7 +86,7 @@ public class EditUser extends JFrame {
 		phoneLabel.setBounds(443, 167, 76, 32);
 		contentPane.add(phoneLabel);
 		
-		 phone = new CustomJTextField("Điện thoại");
+		phone = new CustomJTextField("Điện thoại");
 		phone.setBounds(529, 167, 228, 32);
 		phone.setTypingStyle();
 		contentPane.add(phone);
@@ -169,7 +155,7 @@ public class EditUser extends JFrame {
 		editButton.setForeground(Color.WHITE);
 		editButton.setFont(new Font("SansSerif", Font.BOLD, 16));
 		editButton.setBackground(Color.BLACK);
-		editButton.setBounds(231, 411, 197, 32);
+		editButton.setBounds(232, 328, 197, 32);
 		contentPane.add(editButton);
 		
 		JButton cancelButton = new JButton("Hủy");
@@ -184,22 +170,22 @@ public class EditUser extends JFrame {
 		cancelButton.setForeground(Color.BLACK);
 		cancelButton.setFont(new Font("SansSerif", Font.BOLD, 16));
 		cancelButton.setBackground(Color.WHITE);
-		cancelButton.setBounds(439, 411, 197, 32);
+		cancelButton.setBounds(444, 328, 197, 32);
 		contentPane.add(cancelButton);
 		
 		JLabel roleLabel = new JLabel("Vai trò:");
 		roleLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		roleLabel.setForeground(Color.GRAY);
 		roleLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		roleLabel.setBounds(85, 270, 71, 32);
+		roleLabel.setBounds(85, 214, 71, 32);
 		contentPane.add(roleLabel);
 		
-		 role = new JComboBox();
+		role = new JComboBox();
 		role.setModel(new DefaultComboBoxModel(new String[] {"Quản lý", "Nhân viên bán hàng", "Khách hàng"}));
 		role.setForeground(new Color(169, 169, 169));
 		role.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		role.setBackground(new Color(255, 255, 255));
-		role.setBounds(161, 272, 228, 29);
+		role.setBounds(161, 214, 228, 29);
 		role.setBorder(null);
 		contentPane.add(role);
 		
@@ -214,12 +200,6 @@ public class EditUser extends JFrame {
 		email_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		email_error.setBounds(161, 200, 109, 21);
 		contentPane.add(email_error);
-		
-		password_error = new JLabel();
-		password_error.setForeground(Color.RED);
-		password_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		password_error.setBounds(161, 251, 155, 21);
-		contentPane.add(password_error);
 		
 		phone_error = new JLabel();
 		phone_error.setForeground(Color.RED);
@@ -242,7 +222,6 @@ public class EditUser extends JFrame {
 				email.setText(rs.getString("email"));
 				address.setText(rs.getString("address"));
 				phone.setText(rs.getString("phone"));
-				password.setText(rs.getString("\"password\""));
 				String genderString = rs.getString("gender");
 				int role_id = Integer.parseInt(rs.getString("role_id"));
 				
@@ -267,7 +246,6 @@ public class EditUser extends JFrame {
 		String full_name = name.getText();
 		String address = this.address.getText(); //xet email khi thay doi da ton tai cha
 		String email = this.email.getText(); //xet email co hop le ko
-		String password = this.password.getText();
 		String phone = this.phone.getText(); //xet so dt khi thay doi co hop le ko
 		String gender = null;
 		int role_id =role.getSelectedIndex() + 1;
@@ -278,17 +256,16 @@ public class EditUser extends JFrame {
 		try {
 			Connection con = OracleConn.getConnection();
 			String sql = 
-				"update \"User\" set full_name=?,address=?,email=?,\"password\"=?,phone=?,gender=?, role_id=? where user_id=?";
+				"update \"User\" set full_name=?,address=?,email=?,phone=?,gender=?, role_id=? where user_id=?";
 			PreparedStatement prs = con.prepareStatement(sql);
 			
 			prs.setString(1, full_name);
 			prs.setString(2, address);
 			prs.setString(3, email);
-			prs.setString(4, password);
-			prs.setString(5, phone);
-			prs.setString(6, gender);
-			prs.setInt(7, role_id);
-			prs.setInt(8, id);
+			prs.setString(4, phone);
+			prs.setString(5, gender);
+			prs.setInt(6, role_id);
+			prs.setInt(7, id);
 			
 			int RowCount = prs.executeUpdate();
 			if(RowCount > 0) {
@@ -307,7 +284,6 @@ public class EditUser extends JFrame {
 	//validation
 	public boolean validateUser() {
 		String full_name = name.getText();
-		String password = this.password.getText();
 		String email = this.email.getText();
 		String phone = this.phone.getText();
 		
@@ -325,12 +301,6 @@ public class EditUser extends JFrame {
 		else if (!email.matches("^.+@.+\\..+$")) {
 				email_error.setText("Email không hợp lệ.");
 				check = false;
-			}
-		
-		//password
-		if (password.equals("")) {
-			password_error.setText("Yêu cầu nhập Mật khẩu.");
-			check = false;
 		}
 		else if (checkDuplicateUser()) {
 			email_error.setText("Email này đã tồn tại");
@@ -370,7 +340,6 @@ public class EditUser extends JFrame {
 	public void clearMessage() {
 		name_error.setText("");
 		email_error.setText("");
-		password_error.setText("");
 		phone_error.setText("");
 	}
 		
@@ -392,7 +361,6 @@ public class EditUser extends JFrame {
 	private JPanel contentPane;
 	private CustomJTextField name;
 	private CustomJTextField email;
-	private CustomJTextField password;
 	private CustomJTextField address;
 	private CustomJTextField phone;
 	private JComboBox role;
@@ -402,7 +370,6 @@ public class EditUser extends JFrame {
 	private ButtonGroup gender;
 	private JLabel name_error;
 	private JLabel email_error;
-	private JLabel password_error;
 	private JLabel phone_error;
 	private Users users;
 	private int id;

@@ -292,6 +292,7 @@ public class Products extends JPanel {
 	
 	//sort table
 	public void sort() {
+		model = (DefaultTableModel) products_list.getModel();
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
 		products_list.setRowSorter(sorter);
 	}

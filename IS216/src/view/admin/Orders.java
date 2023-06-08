@@ -249,6 +249,7 @@ public class Orders extends JPanel {
 	
 	//search by column in table
 	public void searchby(String query, int searchColIndex) {
+		model = (DefaultTableModel) orders_list.getModel();
 		TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
 		orders_list.setRowSorter(tr);
 		
