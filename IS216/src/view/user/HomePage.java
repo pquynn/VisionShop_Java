@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import Connect.OracleConn;
 import view.Login;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -39,6 +40,9 @@ public class HomePage extends JFrame {
 	}
 
 	public HomePage(int user_id) {
+		ImageIcon frameIcon = new ImageIcon(Account.class.getResource("/assets/sunglasses.png"));
+		this.setIconImage(frameIcon.getImage());
+		setTitle("Cửa hàng mắt kính Vision");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(300, 100, 1040, 640);
 		setResizable(false);

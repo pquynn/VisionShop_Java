@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -55,6 +56,8 @@ public class ChangePassword extends JFrame {
 	}
 
 	public ChangePassword(int user_id) {
+		ImageIcon frameIcon = new ImageIcon(Account.class.getResource("/assets/sunglasses.png"));
+		setIconImage(frameIcon.getImage());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setBounds(440, 180, 880, 550);

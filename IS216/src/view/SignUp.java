@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -21,6 +22,8 @@ import javax.swing.event.ChangeListener;
 
 import Connect.OracleConn;
 import components.CustomJTextField;
+import view.user.Account;
+
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -45,6 +48,9 @@ public class SignUp extends JFrame {
 	}
 
 	public SignUp() {
+		ImageIcon frameIcon = new ImageIcon(Account.class.getResource("/assets/sunglasses.png"));
+		setIconImage(frameIcon.getImage());
+		setTitle("Cửa hàng mắt kính Vision");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		setBounds(440, 180, 880, 550);

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 import Connect.OracleConn;
 import Email.JavaMail;
 import components.CustomJTextField;
+import view.user.Account;
 
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -43,6 +45,8 @@ public class ForgotPassword extends JFrame {
 	}
 	
 	public ForgotPassword() {
+		ImageIcon frameIcon = new ImageIcon(Account.class.getResource("/assets/sunglasses.png"));
+		setIconImage(frameIcon.getImage());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setBounds(560, 250, 566, 358);

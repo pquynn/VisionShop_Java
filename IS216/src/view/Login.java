@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import components.CustomJTextField;
+import view.user.Account;
 import view.user.HomePage;
 
 import java.awt.Color;
@@ -19,6 +20,7 @@ import java.awt.Font;
 
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -61,6 +63,9 @@ public class Login extends JFrame {
 	}
 	
 	public Login() {
+		ImageIcon frameIcon = new ImageIcon(Account.class.getResource("/assets/sunglasses.png"));
+		setIconImage(frameIcon.getImage());
+		setTitle("Cửa hàng mắt kính Vision");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setBounds(440, 180, 880, 550);
@@ -199,6 +204,12 @@ public class Login extends JFrame {
 		password_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		password_error.setBounds(302, 261, 166, 21);
 		contentPane.add(password_error);
+		
+		JLabel lblChoMngBn = new JLabel("Chào mừng trở lại với Vision,");
+		lblChoMngBn.setForeground(Color.BLACK);
+		lblChoMngBn.setFont(new Font("SansSerif", Font.BOLD, 24));
+		lblChoMngBn.setBounds(260, 46, 381, 55);
+		contentPane.add(lblChoMngBn);
 		forgetPassword.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				new ForgotPassword().setVisible(true);
