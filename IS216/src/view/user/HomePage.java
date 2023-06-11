@@ -111,7 +111,8 @@ public class HomePage extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int ret = JOptionPane.showConfirmDialog(null, "Xác nhận đăng xuất", "Đăng xuất", JOptionPane.YES_NO_OPTION);
 				if (ret == JOptionPane.YES_OPTION){
-					System.exit(0);
+					new Login().setVisible(true);
+					dispose();
 				}
 			}
 		});

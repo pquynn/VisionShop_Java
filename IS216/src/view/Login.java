@@ -158,6 +158,8 @@ public class Login extends JFrame {
 		contentPane.add(loginButton);
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				email_error.setText("");
+				password_error.setText("");
 				if(validateLogin()) {
 					verify();
 				}

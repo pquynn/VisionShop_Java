@@ -336,10 +336,10 @@ public class SignUp extends JFrame {
 		String gender = null;
 		
 		if (address.equals("Địa chỉ")) {
-			this.address.setText("");
+			address = "";
 		}
 		if (phone.equals("Điện thoại")) {
-			this.phone.setText("");
+			phone = "";
 		}
 		if(genderGroup.getSelection() != null)
 			 gender = genderGroup.getSelection().getActionCommand();

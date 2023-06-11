@@ -335,7 +335,7 @@ public class Admin extends JPanel {
 			//hid statistic
 			subBar.remove(statistic);
 			remove(statisticsPanel);
-			add(categoryPanel, BorderLayout.CENTER);
+			add(ordersPanel, BorderLayout.CENTER);
 			//hide user
 			subBar.remove(users);
 			remove(usersPanel);
