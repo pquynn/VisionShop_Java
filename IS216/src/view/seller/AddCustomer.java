@@ -300,10 +300,10 @@ public class AddCustomer extends JFrame {
 		String gender = null;
 		
 		if (address.equals("Địa chỉ")) {
-			address = null;
+			address = "";
 		}
 		if (phone.equals("Điện thoại")) {
-			phone = null;
+			phone = "";
 		}
 		if(this.gender.getSelection() != null)
 			 gender = this.gender.getSelection().getActionCommand();

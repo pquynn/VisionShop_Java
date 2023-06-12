@@ -30,7 +30,7 @@ public class HomePage extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					HomePage frame = new HomePage(22);
+					HomePage frame = new HomePage(4);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

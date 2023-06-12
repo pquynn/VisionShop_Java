@@ -319,10 +319,10 @@ public class AddUser extends JFrame {
 		String role_id = String.valueOf(role.getSelectedIndex() + 1);
 		
 		if (address.equals("Địa chỉ")) {
-			address = null;
+			address = "";
 		}
 		if (phone.equals("Điện thoại")) {
-			phone = null;
+			phone = "";
 		}
 		if(this.gender.getSelection() != null)
 			 gender = this.gender.getSelection().getActionCommand();

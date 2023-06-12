@@ -90,22 +90,6 @@ public class EditUser extends JFrame {
 		phone.setBounds(529, 167, 228, 32);
 		phone.setTypingStyle();
 		contentPane.add(phone);
-		phone.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				if(phone.getText().equals("Điện thoại")) {
-					phone.setText("");
-					phone.requestFocus();
-					phone.setTypingStyle();
-				}
-			}
-			
-			public void focusLost(FocusEvent e) {
-				if(phone.getText().length() == 0) {
-					phone.setDefaultStyle();
-					phone.setText("Điện thoại");
-				}
-			}
-		});
 		
 		JLabel genderLabel = new JLabel("Giới tính:");
 		genderLabel.setHorizontalAlignment(SwingConstants.RIGHT);

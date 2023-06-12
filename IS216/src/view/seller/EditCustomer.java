@@ -90,22 +90,6 @@ public class EditCustomer extends JFrame {
 		phone.setBounds(529, 167, 228, 32);
 		phone.setTypingStyle();
 		contentPane.add(phone);
-		phone.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				if(phone.getText().equals("Điện thoại")) {
-					phone.setText("");
-					phone.requestFocus();
-					phone.setTypingStyle();
-				}
-			}
-			
-			public void focusLost(FocusEvent e) {
-				if(phone.getText().length() == 0) {
-					phone.setDefaultStyle();
-					phone.setText("Điện thoại");
-				}
-			}
-		});
 		
 		JLabel genderLabel = new JLabel("Giới tính:");
 		genderLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -224,29 +208,28 @@ public class EditCustomer extends JFrame {
 	//update user detail 
 	public void updateUserDetailById() {
 		String full_name = name.getText();
-		String address = this.address.getText(); //xet email khi thay doi da ton tai cha
-		String email = this.email.getText(); //xet email co hop le ko
-		String phone = this.phone.getText(); //xet so dt khi thay doi co hop le ko
+		String address = this.address.getText(); 
+		String email = this.email.getText(); 
+		String phone = this.phone.getText(); 
 		String gender = null;
 		
 		if(this.gender.getSelection() != null)
 			 gender = this.gender.getSelection().getActionCommand();
+		
 		try {
 			Connection con = OracleConn.getConnection();
 			String sql = 
-				"update \"User\" set full_name=?,address=?,email=?,phone=?,gender=? where user_id=? and role_id = 3";
+				"update \"User\" set full_name=?,address=?,email=?,phone=?,gender=? where user_id=?";
 			PreparedStatement prs = con.prepareStatement(sql);
-			
 			prs.setString(1, full_name);
 			prs.setString(2, address);
 			prs.setString(3, email);
 			prs.setString(4, phone);
 			prs.setString(5, gender);
 			prs.setInt(6, id);
-			System.out.println("trc khi cap nhat");
+			
 			int RowCount = prs.executeUpdate();
 			if(RowCount > 0) {
-				System.out.println("sau khi cap nhat");
 				JOptionPane.showMessageDialog(null, "Cập nhật thành công");
 				customers.resetTable();
 				dispose();
