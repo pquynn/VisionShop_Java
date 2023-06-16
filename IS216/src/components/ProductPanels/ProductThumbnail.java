@@ -3,6 +3,8 @@ package components.ProductPanels;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import view.user.Account;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;

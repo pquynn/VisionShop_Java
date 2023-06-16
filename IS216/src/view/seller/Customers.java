@@ -22,13 +22,20 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+
 import javax.swing.table.DefaultTableCellRenderer;
 
 import Connect.OracleConn;
+import Exporter.exporter;
 
 import javax.swing.RowFilter;
 import javax.swing.JButton;
@@ -37,6 +44,8 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class Customers extends JPanel {
 
@@ -76,7 +85,7 @@ public class Customers extends JPanel {
 		content1_east.setBackground(new Color(255, 255, 255));
 		content1.add(content1_east, BorderLayout.EAST);
 		content1_east.setLayout(null);
-		content1_east.setPreferredSize(new Dimension(300, 100));
+		content1_east.setPreferredSize(new Dimension(250, 100));
 		
 		addButton = new JButton("+Thêm");
 		addButton.addActionListener(new ActionListener() {
@@ -84,11 +93,26 @@ public class Customers extends JPanel {
 				createNewAddCustomer();
 			}
 		});
-		addButton.setBounds(175, 48, 85, 23);
+		addButton.setBounds(133, 48, 85, 23);
 		content1_east.add(addButton);
 		addButton.setForeground(Color.WHITE);
 		addButton.setFont(new Font("SansSerif", Font.BOLD, 14));
 		addButton.setBackground(Color.BLACK);
+		
+		JButton exportButton = new JButton("Xuất Excel");
+		exportButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Bạn muốn xuất file Excel?", "Xuất file", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION) {
+					exportToExcel();
+				}
+			}
+		});
+		exportButton.setForeground(Color.WHITE);
+		exportButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+		exportButton.setBackground(Color.BLACK);
+		exportButton.setBounds(10, 48, 110, 23);
+		content1_east.add(exportButton);
 		
 		JPanel content1_center = new JPanel();
 		content1_center.setBackground(new Color(255, 255, 255));
@@ -184,9 +208,6 @@ public class Customers extends JPanel {
 		scrollPane = new CustomScrollPane();
 		content2.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(users_list);
-		
-		//sort table by column
-		sort();
 	}
 	
 	
@@ -244,11 +265,35 @@ public class Customers extends JPanel {
 	                }
 				  
 				  int id = (int)model.getValueAt(users_list.getSelectedRow(), 0);
-				  deleteUserById(id);
-				  model.removeRow(users_list.getSelectedRow());
+				  if(validateDeleteUser()) {
+					  deleteUserById(id);
+					  model.removeRow(users_list.getSelectedRow());
+				  }
 			}
 		}
 	};
+	}
+	
+	//validate delete user
+	boolean validateDeleteUser() {
+		boolean isValid = true;
+		try {
+			Connection conn = OracleConn.getConnection();
+			String sql = "select count(*) from \"Order\" where user_id = ? and \"order_state\" in ('Chưa xác nhận', 'Chờ giao hàng', 'Đang giao hàng')";
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setInt(1, id);
+			
+			ResultSet rs = pst.executeQuery();
+			if(rs.next()) {
+				if(rs.getInt(1) > 0) {
+					JOptionPane.showMessageDialog(this, "Không thể xóa khách hàng đang thực hiện mua hàng.");
+					isValid = false;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return isValid;
 	}
 	
 	//delete user
@@ -298,13 +343,6 @@ public class Customers extends JPanel {
 		editCustomer.setVisible(true);
 	}
 	
-	//sort table
-	public void sort() {
-		model = (DefaultTableModel) users_list.getModel();
-		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
-		users_list.setRowSorter(sorter);
-	}
-	
 	//search by column in table
 	public void searchby(String query, int searchColIndex) {
 		TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
@@ -321,4 +359,28 @@ public class Customers extends JPanel {
         }
 	}
 
+	//export to excel
+	public void exportToExcel() {
+		TreeMap<String, Object[]> map = new TreeMap<>();
+		map.put("0", new Object[] {"Mã KH", "Tên KH", "Địa chỉ", "Email", "Giới tính", "Điện thoại", "Ngày thêm", "Ngày cập nhật"});
+		
+		try {
+			Connection conn = OracleConn.getConnection();
+			java.sql.Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery
+				("select * from \"User\" where role_id = 3 order by user_id");
+			
+			int i = 1;
+			while(rs.next()) {
+				map.put(Integer.toString(i), new Object[] {rs.getInt(1), rs.getString(3), rs.getString(4),
+						rs.getString(5), rs.getString(7), rs.getString(8), rs.getDate(10), rs.getDate(11)});
+				i++;
+			}
+			
+			exporter exp = new exporter(map);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

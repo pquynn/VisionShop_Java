@@ -42,7 +42,7 @@ public class OrderDetail extends JFrame {
 		JPanel north = new JPanel();
 		north.setBackground(new Color(255, 255, 255));
 		contentPane.add(north, BorderLayout.NORTH);
-		north.setPreferredSize(new Dimension(100, 200));
+		north.setPreferredSize(new Dimension(100, 180));
 		north.setLayout(null);
 		
 		JLabel order_detail = new JLabel("Chi tiết đơn hàng");
@@ -179,7 +179,7 @@ public class OrderDetail extends JFrame {
 		product_list.setShowVerticalLines(false);
 		product_list.setBorder(null);
 		product_list.setForeground(new Color(0, 0, 0));
-		product_list.setRowHeight(50);
+		product_list.setRowHeight(40);
 		product_list.setGridColor(new Color(211, 211, 211));
 		
 		product_list.getTableHeader().setBackground(Color.WHITE);

@@ -64,11 +64,12 @@ public class AddCustomer extends JFrame {
 					name.setTypingStyle();
 				}
 			}
-			
 			public void focusLost(FocusEvent e) {
+				name_error.setText("");
 				if(name.getText().length() == 0) {
 					name.setDefaultStyle();
 					name.setText("Họ tên");
+					name_error.setText("Yêu cầu nhập Họ tên.");
 				}
 			}
 		});
@@ -93,12 +94,26 @@ public class AddCustomer extends JFrame {
 			}
 			
 			public void focusLost(FocusEvent e) {
+				email_error.setText("");
 				if(email.getText().length() == 0) {
 					email.setDefaultStyle();
 					email.setText("Email");
+					email_error.setText("Yêu cầu nhập Email.");
 				}
+			}
+		});
+		email.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				email_error.setText("");
+			}
+			public void keyReleased(KeyEvent e) {
 				if(checkDuplicateUser()) {
 					email_error.setText("Email này đã tồn tại");
+				}
+				String vemail = email.getText();
+				
+				if (!vemail.matches("^.+@.+\\..+$")) {
+					email_error.setText("Email không hợp lệ.");
 				}
 			}
 		});
@@ -123,9 +138,11 @@ public class AddCustomer extends JFrame {
 			}
 			
 			public void focusLost(FocusEvent e) {
+				password_error.setText(".");
 				if(password.getText().length() == 0) {
 					password.setDefaultStyle();
 					password.setText("Mật khẩu");
+					password_error.setText("Yêu cầu nhập Mật khẩu.");
 				}
 			}
 		});
@@ -165,17 +182,6 @@ public class AddCustomer extends JFrame {
 		contentPane.add(phoneLabel);
 		
 		 phone = new CustomJTextField("Điện thoại");
-		 phone.addKeyListener(new KeyAdapter() {
-		 	public void keyReleased(KeyEvent e) {
-		 		if((phone.getText().length() != 10 || !phone.getText().matches("[0-9]+"))&& !phone.getText().equals("Điện thoại")) {
-		 			phone_error.setText("Điện thoại không hợp lệ");
-		 			}
-		 	}
-		 	public void keyPressed(KeyEvent e) {
-		 		phone_error.setText("");
-		 			
-		 	}
-		 });
 		phone.setBounds(530, 167, 228, 32);
 		contentPane.add(phone);
 		phone.addFocusListener(new FocusAdapter() {
@@ -194,6 +200,18 @@ public class AddCustomer extends JFrame {
 				}
 			}
 		});
+		phone.addKeyListener(new KeyAdapter() {
+		 	public void keyReleased(KeyEvent e) {
+		 		String vphone = phone.getText();
+				if((vphone.length() != 10 || !vphone.matches("[0-9]+") || vphone.charAt(0) != '0')) {
+					phone_error.setText("Điện thoại không hợp lệ");
+				}
+		 	}
+		 	public void keyPressed(KeyEvent e) {
+		 		phone_error.setText("");
+		 			
+		 	}
+		 });
 		
 		JLabel genderLabel = new JLabel("Giới tính:");
 		genderLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -364,8 +382,9 @@ public class AddCustomer extends JFrame {
 			check = false;
 		}
 		//phone
-		if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
-		check = false;
+		if((phone.length() != 10 || !phone.matches("[0-9]+") || phone.charAt(0) != '0')&& !phone.equals("Điện thoại")) {
+			phone_error.setText("Điện thoại không hợp lệ");
+			check = false;
 		}
 		return check;
 	}
@@ -399,7 +418,6 @@ public class AddCustomer extends JFrame {
 		password_error.setText("");
 		phone_error.setText("");
 	}
-	
 	
 	public void setUsersPanel(Customers customers) {
 		this.customers = customers;

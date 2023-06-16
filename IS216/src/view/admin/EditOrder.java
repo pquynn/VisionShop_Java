@@ -6,7 +6,10 @@ import javax.swing.JPanel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import org.jfree.util.PublicCloneable;
+
 import Connect.OracleConn;
+import Email.JavaMail;
 import Printer.Printer;
 
 import java.awt.BorderLayout;
@@ -40,15 +43,14 @@ public class EditOrder extends JFrame {
 		contentPane.setBorder(null);
 
 		setContentPane(contentPane);
+		
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		JScrollPane scrollPane = new JScrollPane();
-		contentPane.add(scrollPane, BorderLayout.CENTER);
 		
 		JPanel north = new JPanel();
 		north.setBackground(new Color(255, 255, 255));
 		contentPane.add(north, BorderLayout.NORTH);
-		north.setPreferredSize(new Dimension(100, 200));
+		north.setPreferredSize(new Dimension(100, 180));
 		north.setLayout(null);
 		
 		JLabel order_detail = new JLabel("Chi tiết đơn hàng");
@@ -171,9 +173,69 @@ public class EditOrder extends JFrame {
 		JPanel south = new JPanel();
 		south.setBackground(new Color(255, 255, 255));
 		contentPane.add(south, BorderLayout.SOUTH);
-		south.setPreferredSize(new Dimension(100, 80));
+		south.setPreferredSize(new Dimension(100, 70));
 		south.setLayout(null);
 		
+		
+		
+		JPanel west = new JPanel();
+		west.setBackground(new Color(255, 255, 255));
+		contentPane.add(west, BorderLayout.WEST);
+		west.setPreferredSize(new Dimension(50, 100));
+		
+		JPanel east = new JPanel();
+		east.setBackground(new Color(255, 255, 255));
+		contentPane.add(east, BorderLayout.EAST);
+		east.setPreferredSize(new Dimension(50, 100));
+
+		btPrint = new JButton("In hóa đơn");
+		btPrint.setBounds(75, 17, 141, 32);
+		south.add(btPrint);
+		btPrint.setForeground(Color.WHITE);
+		btPrint.setFont(new Font("SansSerif", Font.BOLD, 16));
+		btPrint.setBackground(Color.BLACK);
+		btPrint.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Bạn muốn in hóa đơn", "In", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION) {
+					btPrint.setVisible(false);
+					Printer printer = new Printer(contentPane);
+					printer.print();
+					btPrint.setVisible(true);
+				}
+			}
+		});
+		
+		btPayment = new JButton("Đã thanh toán");
+		btPayment.setForeground(Color.WHITE);
+		btPayment.setFont(new Font("SansSerif", Font.BOLD, 16));
+		btPayment.setBackground(Color.BLACK);
+		btPayment.setBounds(600, 17, 213, 32);
+		south.add(btPayment);
+		btPayment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Xác nhận đơn hàng đã được thanh toán", "Đã thanh toán", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION)
+					setPaymentState();
+			}
+		});
+		
+		btDelivery = new JButton("Bắt đầu giao hàng");
+		btDelivery.setForeground(Color.WHITE);
+		btDelivery.setFont(new Font("SansSerif", Font.BOLD, 16));
+		btDelivery.setBackground(Color.BLACK);
+		btDelivery.setBounds(363, 17, 213, 32);
+		south.add(btDelivery);
+		btDelivery.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Xác nhận bắt đầu giao hàng", "Bắt đầu giao hàng", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION)
+					setDeliveryState();
+			}
+		});
+		
+		JScrollPane scrollPane = new JScrollPane();
+		contentPane.add(scrollPane, BorderLayout.CENTER);
 		//Product list table
 		product_list = new JTable();
 		product_list.setModel(new DefaultTableModel(
@@ -184,7 +246,7 @@ public class EditOrder extends JFrame {
 		product_list.setShowVerticalLines(false);
 		product_list.setBorder(null);
 		product_list.setForeground(new Color(0, 0, 0));
-		product_list.setRowHeight(50);
+		product_list.setRowHeight(35);
 		product_list.setGridColor(new Color(211, 211, 211));
 		
 		product_list.getTableHeader().setBackground(Color.WHITE);
@@ -205,64 +267,12 @@ public class EditOrder extends JFrame {
 		product_list.setFont(new Font("SansSerif", Font.PLAIN, 13));
 		scrollPane.setViewportView(product_list);
 		
-		JPanel west = new JPanel();
-		west.setBackground(new Color(255, 255, 255));
-		contentPane.add(west, BorderLayout.WEST);
-		west.setPreferredSize(new Dimension(50, 100));
-		
-		JPanel east = new JPanel();
-		east.setBackground(new Color(255, 255, 255));
-		contentPane.add(east, BorderLayout.EAST);
-		east.setPreferredSize(new Dimension(50, 100));
-
-		btPrint = new JButton("In hóa đơn");
-		btPrint.setBounds(75, 22, 141, 32);
-		south.add(btPrint);
-		btPrint.setForeground(Color.WHITE);
-		btPrint.setFont(new Font("SansSerif", Font.BOLD, 16));
-		btPrint.setBackground(Color.BLACK);
-		btPrint.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int ref = JOptionPane.showConfirmDialog(null, "Bạn muốn in hóa đơn", "In", JOptionPane.YES_NO_OPTION);
-				if(ref == JOptionPane.YES_OPTION) {
-					Printer printer = new Printer(contentPane);
-					printer.print();
-				}
-			}
-		});
-		
-		btPayment = new JButton("Đã thanh toán");
-		btPayment.setForeground(Color.WHITE);
-		btPayment.setFont(new Font("SansSerif", Font.BOLD, 16));
-		btPayment.setBackground(Color.BLACK);
-		btPayment.setBounds(600, 22, 213, 32);
-		south.add(btPayment);
-		btPayment.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int ref = JOptionPane.showConfirmDialog(null, "Xác nhận đơn hàng đã được thanh toán", "Đã thanh toán", JOptionPane.YES_NO_OPTION);
-				if(ref == JOptionPane.YES_OPTION)
-					setPaymentState();
-			}
-		});
-		
-		btDelivery = new JButton("Bắt đầu giao hàng");
-		btDelivery.setForeground(Color.WHITE);
-		btDelivery.setFont(new Font("SansSerif", Font.BOLD, 16));
-		btDelivery.setBackground(Color.BLACK);
-		btDelivery.setBounds(363, 22, 213, 32);
-		south.add(btDelivery);
-		btDelivery.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int ref = JOptionPane.showConfirmDialog(null, "Xác nhận bắt đầu giao hàng", "Bắt đầu giao hàng", JOptionPane.YES_NO_OPTION);
-				if(ref == JOptionPane.YES_OPTION)
-					setDeliveryState();
-			}
-		});
-		
 		//set order detail by id
 		setOrderDetailById();
 			
 	}
+	
+	
 		
 	//custom column by index
 	public void customColumnN(int index, int w) {
@@ -384,6 +394,12 @@ public class EditOrder extends JFrame {
 			btDelivery.setVisible(false);
 			btPayment.setVisible(false);
 		}
+	}
+	
+	//get content pane
+	public JPanel getPanel() {
+		btPrint.setVisible(false);
+		return contentPane;
 	}
 
 	private JPanel contentPane;

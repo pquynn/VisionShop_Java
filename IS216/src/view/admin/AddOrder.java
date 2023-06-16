@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import Connect.OracleConn;
+import Printer.Printer;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -29,6 +30,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -40,6 +43,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.DefaultComboBoxModel;
 
 public class AddOrder extends JFrame {
 	public AddOrder() {
@@ -84,6 +88,14 @@ public class AddOrder extends JFrame {
 		name.setBounds(154, 150, 228, 32);
 		name.setTypingStyle();
 		pane.add(name);
+		name.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				name_error.setText("");
+				if(name.getText().length() == 0) {
+					name_error.setText("Yêu cầu nhập Họ tên.");
+				}
+			}
+		});
 		
 		
 		JLabel emailLabel = new JLabel("Email:");
@@ -93,12 +105,29 @@ public class AddOrder extends JFrame {
 		emailLabel.setBounds(77, 100, 71, 32);
 		pane.add(emailLabel);
 		
-		 email = new CustomJTextField("Email");
-		 email.setText("");
-		 email.setEditable(false);
+		email = new CustomJTextField("Email");
+		email.setText("");
 		email.setBounds(153, 102, 228, 32);
 		email.setTypingStyle();
 		pane.add(email);
+		email.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				if(email.getText().length() == 0) {
+					email_error.setText("");
+				}
+			}
+		});
+		email.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				email_error.setText("");
+			}
+			public void keyReleased(KeyEvent e) {
+				String vemail = email.getText();
+				if (!vemail.matches("^.+@.+\\..+$")) {
+					email_error.setText("Email không hợp lệ.");
+				}
+			}
+		});
 		
 		JLabel addressLabel = new JLabel("Địa chỉ: ");
 		addressLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -124,20 +153,27 @@ public class AddOrder extends JFrame {
 		 phone = new CustomJTextField("Điện thoại");
 		 phone.setText("");
 		 phone.setTypingStyle();
-		 phone.addKeyListener(new KeyAdapter() {
+		phone.setBounds(153, 239, 228, 32);
+		pane.add(phone);
+		phone.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				phone_error.setText("");
+				if(phone.getText().length() == 0) {
+					phone_error.setText("Yêu cầu nhập Điện thoại.");
+				}
+			}
+		});
+		phone.addKeyListener(new KeyAdapter() {
 		 	public void keyReleased(KeyEvent e) {
-		 		if((phone.getText().length() != 10 || !phone.getText().matches("[0-9]+"))&& !phone.getText().equals("Điện thoại")) {
-		 			phone_error.setText("Điện thoại không hợp lệ");
-		 			}
+		 		String vphone = phone.getText();
+				if((vphone.length() != 10 || !vphone.matches("[0-9]+") || vphone.charAt(0) != '0')) {
+					phone_error.setText("Điện thoại không hợp lệ");
+				}
 		 	}
 		 	public void keyPressed(KeyEvent e) {
 		 		phone_error.setText("");
-		 			
 		 	}
 		 });
-		 
-		phone.setBounds(153, 239, 228, 32);
-		pane.add(phone);
 		
 		
 		JButton btAddOrder = new JButton("Thanh toán");
@@ -166,6 +202,7 @@ public class AddOrder extends JFrame {
 		pane.add(id_name);
 		
 		users_list = new JComboBox();
+		users_list.setModel(new DefaultComboBoxModel(new String[] {""}));
 		users_list.setForeground(new Color(105,105,105));
 		users_list.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		users_list.setBackground(new Color(255, 255, 255));
@@ -184,13 +221,13 @@ public class AddOrder extends JFrame {
 		quantity_error = new JLabel();
 		quantity_error.setForeground(Color.RED);
 		quantity_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		quantity_error.setBounds(534, 176, 158, 21);
+		quantity_error.setBounds(534, 176, 228, 21);
 		pane.add(quantity_error);
 		
 		phone_error = new JLabel();
 		phone_error.setForeground(Color.RED);
 		phone_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		phone_error.setBounds(153, 267, 177, 21);
+		phone_error.setBounds(153, 267, 229, 21);
 		pane.add(phone_error);
 		
 		JLabel order_heading_1 = new JLabel("Nhập chi tiết hóa đơn");
@@ -252,6 +289,28 @@ public class AddOrder extends JFrame {
 		quantity.setBounds(533, 150, 228, 32);
 		quantity.setTypingStyle();
 		pane.add(quantity);
+		quantity.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				quantity_error.setText("");
+				if(quantity.getText().length() == 0) {
+					quantity_error.setText("Yêu cầu nhập Số lượng.");
+				}
+			}
+		});
+		quantity.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				String vquantity = quantity.getText();
+				if((!vquantity.matches("[0-9]+"))) {
+					quantity_error.setText("Số lượng sản phẩm phải là số > 0");
+				}
+				else if(Integer.parseInt(vquantity) <= 0) {
+					quantity_error.setText("Số lượng sản phẩm phải > 0");
+				}
+			}
+			public void keyPressed(KeyEvent e) {
+				quantity_error.setText("");
+			}
+		});
 		
 		products_list = new JComboBox();
 		products_list.setForeground(new Color(105,105,105));
@@ -324,7 +383,7 @@ public class AddOrder extends JFrame {
 		orderdetails_list.setShowVerticalLines(false);
 		orderdetails_list.setBorder(null);
 		orderdetails_list.setForeground(new Color(0, 0, 0));
-		orderdetails_list.setRowHeight(50);
+		orderdetails_list.setRowHeight(40);
 		orderdetails_list.setGridColor(new Color(211, 211, 211));
 		
 		orderdetails_list.getTableHeader().setBackground(Color.WHITE);
@@ -351,8 +410,14 @@ public class AddOrder extends JFrame {
 		name_error = new JLabel();
 		name_error.setForeground(Color.RED);
 		name_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		name_error.setBounds(153, 176, 177, 21);
+		name_error.setBounds(153, 176, 229, 21);
 		pane.add(name_error);
+		
+		email_error = new JLabel();
+		email_error.setForeground(Color.RED);
+		email_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		email_error.setBounds(154, 131, 228, 21);
+		pane.add(email_error);
 		
 		JButton btEditDetail = new JButton("Sửa");
 		btEditDetail.setForeground(Color.BLACK);
@@ -429,7 +494,7 @@ public class AddOrder extends JFrame {
 	//set user detail by id
 	public void setUserDetailByID() {
 		//get the user_id from selected item
-		if(users_list.getItemCount() > 0) {
+		if(users_list.getSelectedIndex() != 0) {
 			String selected_user = users_list.getSelectedItem().toString();
 			int iend = selected_user.indexOf(" "); 
 
@@ -455,6 +520,13 @@ public class AddOrder extends JFrame {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		else {
+			user_id = 0;
+			name.setText("");
+			email.setText("");
+			address.setText("");
+			phone.setText("");
 		}
 		
 	}
@@ -543,7 +615,6 @@ public class AddOrder extends JFrame {
 	//validate add order detail
 	public boolean validateAddOderDetail() {
 		String quantity = this.quantity.getText();
-		String phone = this.phone.getText();
 		boolean isValid = true;
 		if(quantity.equals(""))
 		{
@@ -552,7 +623,7 @@ public class AddOrder extends JFrame {
 		}
 		else if((!quantity.matches("[0-9]+"))) {
 			isValid = false;
-			quantity_error.setText("Yêu cầu nhập số lượng");
+			quantity_error.setText("Số lượng sản phẩm phải là số > 0");
 		}
 		else if(Integer.parseInt(quantity) <= 0) {
 			isValid = false;
@@ -654,6 +725,8 @@ public class AddOrder extends JFrame {
 	public void clearMessage() {
 		quantity_error.setText("");
 		phone_error.setText("");
+		email_error.setText("");
+		name_error.setText("");
 	}
 	
 	//custom column by index
@@ -672,27 +745,51 @@ public class AddOrder extends JFrame {
 	public void updateOrder() {
 		try {
 			Connection conn = OracleConn.getConnection();
-			String sql="update \"Order\" set user_id=?, full_name=?, address=?, phone=?, total_glasses=?, total_money=?, \"order_state\"=?, email=? where order_id = ?";
-			PreparedStatement st = conn.prepareStatement(sql);
-			st.setInt(1, user_id);
-			st.setString(2, name.getText());
-			st.setString(3, address.getText());
-			st.setString(4, phone.getText());
-			st.setInt(5, Integer.parseInt(txt_number.getText()));
-			st.setInt(6, Integer.parseInt(txt_tota_price.getText()));
-			st.setString(7, "Đã thanh toán");
-			st.setString(8, email.getText());
-			st.setInt(9, order_id);
-			
-			int rowcount = st.executeUpdate();
-			if(rowcount > 0) {
-				JOptionPane.showMessageDialog(this, "Xác nhận đơn hàng đã thanh toán");
-				dispose();
-				orders.resetTable();
+			if(user_id != 0) {
+				String sql="update \"Order\" set user_id=?, full_name=?, address=?, phone=?, total_glasses=?, total_money=?, \"order_state\"=?, email=? where order_id = ?";
+				PreparedStatement st = conn.prepareStatement(sql);
+				st.setInt(1, user_id);
+				st.setString(2, name.getText());
+				st.setString(3, address.getText());
+				st.setString(4, phone.getText());
+				st.setInt(5, Integer.parseInt(txt_number.getText()));
+				st.setInt(6, Integer.parseInt(txt_tota_price.getText()));
+				st.setString(7, "Đã thanh toán");
+				st.setString(8, email.getText());
+				st.setInt(9, order_id);
+				
+				int rowcount = st.executeUpdate();
+				if(rowcount > 0) {
+					JOptionPane.showMessageDialog(this, "Đơn hàng đã thanh toán thành công");
+					dispose();
+					orders.resetTable();
+				}
+				else 
+					JOptionPane.showMessageDialog(this, "Thao tác bị lỗi");
 			}
-			else 
-				JOptionPane.showMessageDialog(this, "Thao tác bị lỗi");
+			else if(user_id == 0) {
+				String sql="update \"Order\" set full_name=?, address=?, phone=?, total_glasses=?, total_money=?, \"order_state\"=?, email=? where order_id = ?";
+				PreparedStatement st = conn.prepareStatement(sql);
+				st.setString(1, name.getText());
+				st.setString(2, address.getText());
+				st.setString(3, phone.getText());
+				st.setInt(4, Integer.parseInt(txt_number.getText()));
+				st.setInt(5, Integer.parseInt(txt_tota_price.getText()));
+				st.setString(6, "Đã thanh toán");
+				st.setString(7, email.getText());
+				st.setInt(8, order_id);
+				
+				int rowcount = st.executeUpdate();
+				if(rowcount > 0) {
+					JOptionPane.showMessageDialog(this, "Đơn hàng đã thanh toán thành công");
+					dispose();
+					orders.resetTable();
+				}
+				else 
+					JOptionPane.showMessageDialog(this, "Thao tác bị lỗi");
+			}
 		} 
+		
 		catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -702,6 +799,7 @@ public class AddOrder extends JFrame {
 	public boolean validateSaveOrder() {
 		String full_name = name.getText();
 		String phone = this.phone.getText();
+		String email = this.email.getText();
 		boolean check = true;
 		//kiem tra hang ton kho
 		check = validateOrderDetails();
@@ -710,10 +808,22 @@ public class AddOrder extends JFrame {
 		if(full_name.equals(""))
 			name_error.setText("Yêu cầu nhập tên khách hàng");
 		
-		if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("")) {
+		//email
+		if (!email.equals("") && !email.matches("^.+@.+\\..+$")) {
+				email_error.setText("Email không hợp lệ.");
+				check = false;
+		}
+		
+		//phone
+		if (phone.equals("")) {
+			phone_error.setText("Yêu cầu nhập Điện thoại.");
 			check = false;
-			phone_error.setText("Số điện thoại sai định dạng");
-		}		
+		}
+		else if(phone.length() != 10 || !phone.matches("[0-9]+")|| phone.charAt(0) != '0') {
+			phone_error.setText("Điện thoại không hợp lệ");
+			check = false;
+		}
+		
 		return check;
 	}
 	
@@ -808,10 +918,12 @@ public class AddOrder extends JFrame {
 		}
 	}
 
+	
 	private JPanel pane;
 	private JLabel quantity_error;
 	private JLabel name_error;
 	private JLabel phone_error;
+	private JLabel email_error;
 	private CustomJTextField name;
 	private CustomJTextField email;
 	private CustomJTextField address;

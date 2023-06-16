@@ -27,6 +27,10 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 
 public class Cart extends JPanel {
@@ -105,21 +109,75 @@ public class Cart extends JPanel {
 		name.setTypingStyle();
 		name.setLocation(42, 30);
 		checkout_center.add(name);
+		name.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				name_error.setText("");
+				if(name.getText().length() == 0) {
+					name_error.setText("Yêu cầu nhập Họ tên.");
+				}
+			}
+		});
 		
 		email = new CustomJTextField("Email");
 		email.setLocation(42, 74);
 		checkout_center.add(email);
 		email.setTypingStyle();
+		email.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				email_error.setText("");
+				if(email.getText().length() == 0) {
+					email_error.setText("Yêu cầu nhập Email.");
+				}
+			}
+		});
+		email.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				email_error.setText("");
+			}
+			public void keyReleased(KeyEvent e) {
+				String vemail = email.getText();
+				if (!vemail.matches("^.+@.+\\..+$")) {
+					email_error.setText("Email không hợp lệ.");
+				}
+			}
+		});
 		
 		address = new CustomJTextField("Địa chỉ");
 		address.setLocation(42, 118);
 		address.setTypingStyle();
 		checkout_center.add(address);
+		address.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				address_error.setText("");
+				if(address.getText().length() == 0) {
+					address_error.setText("Yêu cầu nhập Địa chỉ.");
+				}
+			}
+		});
 		
 		phone = new CustomJTextField("Điện thoại");
 		phone.setTypingStyle();
 		phone.setLocation(42, 162);
 		checkout_center.add(phone);
+		phone.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				phone_error.setText("");
+				if(phone.getText().length() == 0) {
+					phone_error.setText("Yêu cầu nhập Điện thoại.");
+				}
+			}
+		});
+		phone.addKeyListener(new KeyAdapter() {
+		 	public void keyReleased(KeyEvent e) {
+		 		String vphone = phone.getText();
+				if((vphone.length() != 10 || !vphone.matches("[0-9]+") || vphone.charAt(0) != '0')) {
+					phone_error.setText("Điện thoại không hợp lệ");
+				}
+		 	}
+		 	public void keyPressed(KeyEvent e) {
+		 		phone_error.setText("");
+		 	}
+		 });
 		
 		JButton checkoutButton = new JButton("Đặt mua hàng");
 		checkoutButton.setForeground(Color.WHITE);
@@ -379,7 +437,7 @@ public class Cart extends JPanel {
 			phone_error.setText("Yêu cầu nhập Điện thoại.");
 			check = false;
 		}
-		else if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+		else if((phone.length() != 10 || !phone.matches("[0-9]+")|| phone.charAt(0) != '0')&& !phone.equals("Điện thoại")) {
 			phone_error.setText("Điện thoại không hợp lệ");
 			check = false;
 		}

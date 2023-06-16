@@ -31,6 +31,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class SignUp extends JFrame {
 	
@@ -80,9 +82,11 @@ public class SignUp extends JFrame {
 			}
 			
 			public void focusLost(FocusEvent e) {
+				name_error.setText("");
 				if(name.getText().length() == 0) {
 					name.setDefaultStyle();
 					name.setText("Họ tên");
+					name_error.setText("Yêu cầu nhập Họ tên.");
 				}
 			}
 		});
@@ -100,13 +104,26 @@ public class SignUp extends JFrame {
 			}
 			
 			public void focusLost(FocusEvent e) {
+				email_error.setText("");
 				if(email.getText().length() == 0) {
 					email.setDefaultStyle();
 					email.setText("Email");
+					email_error.setText("Yêu cầu nhập Email.");
 				}
-				
+			}
+		});
+		email.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				email_error.setText("");
+			}
+			public void keyReleased(KeyEvent e) {
 				if(checkDuplicateUser()) {
 					email_error.setText("Email này đã tồn tại");
+				}
+				String vemail = email.getText();
+				
+				if (!vemail.matches("^.+@.+\\..+$")) {
+					email_error.setText("Email không hợp lệ.");
 				}
 			}
 		});
@@ -132,10 +149,12 @@ public class SignUp extends JFrame {
 			}
 			
 			public void focusLost(FocusEvent e) {
+				password_error.setText("");
 				if(password.getText().length() == 0) {
 					password.setForeground(new Color(192,192,192));
 					password.setEchoChar('\u0000');
 					password.setText("Mật khẩu");
+					password_error.setText("Yêu cầu nhập Mật khẩu.");
 				}
 			}
 		});
@@ -171,7 +190,6 @@ public class SignUp extends JFrame {
 					phone.setTypingStyle();
 				}
 			}
-			
 			public void focusLost(FocusEvent e) {
 				if(phone.getText().length() == 0) {
 					phone.setDefaultStyle();
@@ -179,7 +197,17 @@ public class SignUp extends JFrame {
 				}
 			}
 		});
-		
+		phone.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				String vphone = phone.getText();
+				if((vphone.length() != 10 || !vphone.matches("[0-9]+") || vphone.charAt(0) != '0')) {
+					phone_error.setText("Điện thoại không hợp lệ");
+					}
+			}
+			public void keyPressed(KeyEvent e) {
+				phone_error.setText("");
+			}
+		});
 		
 		emailLabel = new JLabel("*Email:");
 		emailLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -401,7 +429,7 @@ public class SignUp extends JFrame {
 			check = false;
 		}
 		//phone
-		if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
+		if((phone.length() != 10 || !phone.matches("[0-9]+") || phone.charAt(0) != '0')&& !phone.equals("Điện thoại")) {
 		phone_error.setText("Điện thoại không hợp lệ");
 		check = false;
 		}

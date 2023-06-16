@@ -27,7 +27,7 @@ public class Printer {
             }
             Graphics2D g2 = (Graphics2D)pg;
             g2.translate(pf.getImageableX(), pf.getImageableY());
-            g2.scale(0.47,0.47);
+            g2.scale(0.7,0.7);
             panel.print(g2);
      
             return Printable.PAGE_EXISTS;

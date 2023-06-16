@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import Connect.OracleConn;
+import Exporter.exporter;
 
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -29,6 +30,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.TreeMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -121,6 +123,21 @@ public class ProductCategory extends JPanel {
 		name_error.setBounds(27, 77, 245, 21);
 		content1.add(name_error);
 		
+		JButton exportButton = new JButton("Xuất Excel");
+		exportButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Bạn muốn xuất file Excel?", "Xuất file", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION) {
+					exportToExcel();
+				}
+			}
+		});
+		exportButton.setForeground(Color.WHITE);
+		exportButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+		exportButton.setBackground(Color.BLACK);
+		exportButton.setBounds(751, 54, 110, 23);
+		content1.add(exportButton);
+		
 		JPanel content2 = new JPanel();
 		content2.setBackground(new Color(255, 255, 255));
 		add(content2, BorderLayout.CENTER);
@@ -168,8 +185,6 @@ public class ProductCategory extends JPanel {
 		content2.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(categories_list);
 		
-		//sort table by column
-		sort();
 	}
 	
 	//custom column by index
@@ -318,9 +333,28 @@ public class ProductCategory extends JPanel {
 		editcategory.setVisible(true);
 	}
 	
-	//sort table
-	public void sort() {
-		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
-		categories_list.setRowSorter(sorter);
+	//export to excel
+	public void exportToExcel() {
+		TreeMap<String, Object[]> map = new TreeMap<>();
+		map.put("0", new Object[] {"Mã loại kính", "Tên loại kính", "Ngày tạo", "Ngày cập nhật"});
+		
+		try {
+			Connection conn = OracleConn.getConnection();
+			java.sql.Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery
+				("select * from \"Category\" order by category_id");
+			
+			int i = 1;
+			while(rs.next()) {
+				map.put(Integer.toString(i), new Object[] {rs.getInt(1), rs.getString(2), rs.getDate(3), rs.getDate(4)});
+				i++;
+			}
+			
+			exporter exp = new exporter(map);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
 }

@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.TreeMap;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.table.DefaultTableCellRenderer;
@@ -31,6 +32,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import Connect.OracleConn;
+import Exporter.exporter;
 
 import javax.swing.RowFilter;
 import javax.swing.JButton;
@@ -70,7 +72,22 @@ public class Products extends JPanel {
 		content1_east.setBackground(new Color(255, 255, 255));
 		content1.add(content1_east, BorderLayout.EAST);
 		content1_east.setLayout(null);
-		content1_east.setPreferredSize(new Dimension(200, 100));
+		content1_east.setPreferredSize(new Dimension(250, 100));
+		
+		JButton exportButton = new JButton("Xuất Excel");
+		exportButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ref = JOptionPane.showConfirmDialog(null, "Bạn muốn xuất file Excel?", "Xuất file", JOptionPane.YES_NO_OPTION);
+				if(ref == JOptionPane.YES_OPTION) {
+					exportToExcel();
+				}
+			}
+		});
+		exportButton.setForeground(Color.WHITE);
+		exportButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+		exportButton.setBackground(Color.BLACK);
+		exportButton.setBounds(10, 48, 110, 23);
+		content1_east.add(exportButton);
 		
 		JButton addButton = new JButton("+Thêm");
 		addButton.addActionListener(new ActionListener() {
@@ -78,7 +95,7 @@ public class Products extends JPanel {
 				createNewAddProduct();
 			}
 		});
-		addButton.setBounds(80, 48, 85, 23);
+		addButton.setBounds(133, 48, 85, 23);
 		content1_east.add(addButton);
 		addButton.setForeground(Color.WHITE);
 		addButton.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -178,8 +195,6 @@ public class Products extends JPanel {
 		content2.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(products_list);
 		
-		//sort table by column
-		sort();
 	}
 		
 	//custom column by index
@@ -289,15 +304,6 @@ public class Products extends JPanel {
 		editProduct.setVisible(true);
 	}
 	
-	
-	//sort table
-	public void sort() {
-		model = (DefaultTableModel) products_list.getModel();
-		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(model);
-		products_list.setRowSorter(sorter);
-	}
-	
-	
 	//search by column in table
 	public void searchby(String query, int searchColIndex) {
 		TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
@@ -312,5 +318,30 @@ public class Products extends JPanel {
                 System.out.println("Bad regex pattern");
             }
         }
+	}
+	
+	//export to excel
+	public void exportToExcel() {
+		TreeMap<String, Object[]> map = new TreeMap<>();
+		map.put("0", new Object[] {"Mã SP", "Loại SP", "Tên SP", "Số lượng", "Đơn giá", "Màu sắc", "Kiểu dáng", "Chất liệu", "Mô tả", "Ngày thêm", "Ngày cập nhật"});
+		
+		try {
+			Connection conn = OracleConn.getConnection();
+			java.sql.Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery
+				("select * from Glasses, \"Category\" where Glasses.category_id=\"Category\".category_id order by glasses_id");
+			
+			int i = 1;
+			while(rs.next()) {
+				map.put(Integer.toString(i), new Object[] {rs.getInt(1), rs.getString(14), rs.getString(5), rs.getInt(3),
+						rs.getInt(6), rs.getString(8), rs.getString(9), rs.getString(7), rs.getString(4), rs.getDate(11), rs.getDate(12)});
+				i++;
+			}
+			
+			exporter exp = new exporter(map);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -56,7 +56,7 @@ public class MyOrder extends JPanel{
 		content1.setLayout(null);
 		content1.setPreferredSize(new Dimension(100, 140));
 		
-		JLabel myorder_heading = new JLabel("Đơn hàng của tôi");
+		JLabel myorder_heading = new JLabel("Lịch sử mua hàng của tôi");
 		myorder_heading.setFont(new Font("SansSerif", Font.BOLD, 24));
 		myorder_heading.setBounds(28, 36, 305, 40);
 		content1.add(myorder_heading);

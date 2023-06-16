@@ -13,5 +13,13 @@
 	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/javax.mail.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/JFreeChart/jcommon-1.0.23.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/JFreeChart/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/xmlbeans-3.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/commons-collections4-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/poi-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/poi-examples-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/poi-excelant-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/poi-ooxml-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/poi-ooxml-schemas-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Quyen/Downloads/poi/poi/poi-scratchpad-3.17.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

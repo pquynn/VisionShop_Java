@@ -20,6 +20,8 @@ import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,6 +56,14 @@ public class EditUser extends JFrame {
 		name.setBounds(161, 122, 228, 32);
 		name.setTypingStyle();
 		contentPane.add(name);
+		name.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				name_error.setText("");
+				if(name.getText().length() == 0) {
+					name_error.setText("Yêu cầu nhập Họ tên.");
+				}
+			}
+		});
 		
 		JLabel emailLabel = new JLabel("Email:");
 		emailLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -62,10 +72,33 @@ public class EditUser extends JFrame {
 		emailLabel.setBounds(85, 167, 71, 32);
 		contentPane.add(emailLabel);
 		
-		 email = new CustomJTextField("Email");
+		email = new CustomJTextField("Email");
 		email.setBounds(161, 167, 228, 32);
 		email.setTypingStyle();
 		contentPane.add(email);
+		email.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				email_error.setText("");
+				if(email.getText().length() == 0) {
+					email_error.setText("Yêu cầu nhập Email.");
+				}
+			}
+		});
+		email.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				email_error.setText("");
+			}
+			public void keyReleased(KeyEvent e) {
+				if(checkDuplicateUser()) {
+					email_error.setText("Email này đã tồn tại");
+				}
+				String vemail = email.getText();
+				
+				if (!vemail.matches("^.+@.+\\..+$")) {
+					email_error.setText("Email không hợp lệ.");
+				}
+			}
+		});
 	
 		JLabel addressLabel = new JLabel("Địa chỉ: ");
 		addressLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -90,6 +123,17 @@ public class EditUser extends JFrame {
 		phone.setBounds(529, 167, 228, 32);
 		phone.setTypingStyle();
 		contentPane.add(phone);
+		phone.addKeyListener(new KeyAdapter() {
+		 	public void keyReleased(KeyEvent e) {
+		 		String vphone = phone.getText();
+				if((vphone.length() != 10 || !vphone.matches("[0-9]+") || vphone.charAt(0) != '0')) {
+					phone_error.setText("Điện thoại không hợp lệ");
+				}
+		 	}
+		 	public void keyPressed(KeyEvent e) {
+		 		phone_error.setText("");
+		 	}
+		 });
 		
 		JLabel genderLabel = new JLabel("Giới tính:");
 		genderLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -176,19 +220,19 @@ public class EditUser extends JFrame {
 		name_error = new JLabel();
 		name_error.setForeground(Color.RED);
 		name_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		name_error.setBounds(166, 151, 109, 21);
+		name_error.setBounds(166, 151, 223, 21);
 		contentPane.add(name_error);
 		
 		email_error = new JLabel();
 		email_error.setForeground(Color.RED);
 		email_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		email_error.setBounds(161, 200, 109, 21);
+		email_error.setBounds(161, 198, 228, 21);
 		contentPane.add(email_error);
 		
 		phone_error = new JLabel();
 		phone_error.setForeground(Color.RED);
 		phone_error.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		phone_error.setBounds(530, 200, 177, 21);
+		phone_error.setBounds(530, 200, 227, 21);
 		contentPane.add(phone_error);
 	}
 	
@@ -291,8 +335,9 @@ public class EditUser extends JFrame {
 		}
 		
 		//phone
-		if((phone.length() != 10 || !phone.matches("[0-9]+"))&& !phone.equals("Điện thoại")) {
-		check = false;
+		if((phone.length() != 10 || !phone.matches("[0-9]+")|| phone.charAt(0) != '0')&& !phone.equals("Điện thoại")) {
+			phone_error.setText("Điện thoại không hợp lệ.");
+			check = false;
 		}
 		return check;
 	}
