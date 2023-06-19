@@ -336,6 +336,7 @@ public class Admin extends JPanel {
 			subBar.remove(statistic);
 			remove(statisticsPanel);
 			add(ordersPanel, BorderLayout.CENTER);
+			orders.setForeground(Color.DARK_GRAY);
 			//hide user
 			subBar.remove(users);
 			remove(usersPanel);

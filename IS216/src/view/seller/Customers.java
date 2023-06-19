@@ -265,50 +265,28 @@ public class Customers extends JPanel {
 	                }
 				  
 				  int id = (int)model.getValueAt(users_list.getSelectedRow(), 0);
-				  if(validateDeleteUser()) {
-					  deleteUserById(id);
-					  model.removeRow(users_list.getSelectedRow());
-				  }
+				   deleteUserById(id);
 			}
 		}
 	};
-	}
-	
-	//validate delete user
-	boolean validateDeleteUser() {
-		boolean isValid = true;
-		try {
-			Connection conn = OracleConn.getConnection();
-			String sql = "select count(*) from \"Order\" where user_id = ? and \"order_state\" in ('Chưa xác nhận', 'Chờ giao hàng', 'Đang giao hàng')";
-			PreparedStatement pst = conn.prepareStatement(sql);
-			pst.setInt(1, id);
-			
-			ResultSet rs = pst.executeQuery();
-			if(rs.next()) {
-				if(rs.getInt(1) > 0) {
-					JOptionPane.showMessageDialog(this, "Không thể xóa khách hàng đang thực hiện mua hàng.");
-					isValid = false;
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return isValid;
 	}
 	
 	//delete user
 	public void deleteUserById(int id) {
 		try {
 			Connection conn = OracleConn.getConnection();
-			String sql = "delete from \"User\" where user_id = ?";
+			String sql = "delete from \"User\" where user_id = ? and user_id not in "
+					+ "(select user_id from \"Order\" where \"order_state\" = 'Chưa xác nhận' or \"order_state\" = 'Chờ giao hàng' or \"order_state\" = 'Đang giao hàng')";
 			PreparedStatement pst = conn.prepareStatement(sql);
 			pst.setInt(1, id);
 			
 			int rowcount = pst.executeUpdate();
-			if(rowcount > 0) 
+			if(rowcount > 0) {
 				JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công");
+				 model.removeRow(users_list.getSelectedRow());
+			}
 			else 
-				JOptionPane.showMessageDialog(this, "Xóa khách hàng không thành công");
+				JOptionPane.showMessageDialog(this, "Không thể xóa khách hàng đang thực hiện mua hàng.");
 				
 		} catch (Exception e) {
 			e.printStackTrace();
